@@ -1,0 +1,745 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoreGlass — A New Kind of Story Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Variables ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:      #0d0e14;
+  --deep:     #12131c;
+  --surface:  #191a28;
+  --border:   #2a2c40;
+  --gold:     #c9923a;
+  --gold-lt:  #e8b86d;
+  --gold-dim: #7a5520;
+  --text:     #d4cfc4;
+  --muted:    #7a7568;
+  --cream:    #f0ead8;
+  --green-lt: #5ab87a;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+/* ── NAV ──────────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(1.5rem, 5vw, 4rem); height: 64px;
+  background: rgba(13,14,20,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201,146,58,0.15);
+}
+.nav-logo {
+  font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600;
+  letter-spacing: 0.18em; color: var(--gold); text-decoration: none;
+  cursor: pointer;
+}
+.nav-links { display: flex; gap: 2.4rem; list-style: none; }
+.nav-links a {
+  font-family: 'Cinzel', serif; font-size: 0.7rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--gold-lt); }
+
+/* ── PAGE SYSTEM ──────────────────────────────────────────────────── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── SHARED HELPERS ───────────────────────────────────────────────── */
+.section-rule {
+  width: 60px; height: 2px;
+  background: var(--gold); margin-bottom: 1.6rem;
+}
+.section-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--gold-dim); margin-bottom: 0.6rem;
+}
+h2 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 600;
+  color: var(--cream); line-height: 1.2;
+  margin-bottom: 1.2rem; letter-spacing: 0.02em;
+}
+.lead {
+  font-size: 1.15rem; color: var(--muted);
+  max-width: 640px; margin-bottom: 3rem;
+}
+section { padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 5vw, 4rem); }
+
+.btn-primary {
+  display: inline-block; padding: 0.85rem 2.4rem;
+  background: var(--gold); color: var(--ink);
+  font-family: 'Cinzel', serif; font-size: 0.75rem;
+  font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(201,146,58,0.25);
+}
+.btn-primary:hover {
+  background: var(--gold-lt); transform: translateY(-1px);
+  box-shadow: 0 6px 30px rgba(201,146,58,0.35);
+}
+.btn-secondary {
+  display: inline-block; padding: 0.85rem 2.4rem;
+  background: transparent; color: var(--gold);
+  font-family: 'Cinzel', serif; font-size: 0.75rem;
+  font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+  text-decoration: none; border: 1px solid var(--gold-dim);
+  transition: border-color 0.2s, color 0.2s, transform 0.15s; cursor: pointer;
+}
+.btn-secondary:hover {
+  border-color: var(--gold); color: var(--gold-lt); transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HOME PAGE
+═══════════════════════════════════════════════════════════════════ */
+
+/* HERO */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 100px 2rem 80px; position: relative; overflow: hidden;
+}
+.hero::after {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -55%); width: 700px; height: 700px;
+  background: radial-gradient(ellipse at center, rgba(201,146,58,0.07) 0%, rgba(74,124,158,0.04) 45%, transparent 70%);
+  pointer-events: none;
+}
+.hero-rule {
+  width: 140px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  margin-bottom: 2rem;
+}
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+  letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--gold-dim); margin-bottom: 1.4rem;
+}
+.hero-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(3.4rem, 9vw, 7.5rem); font-weight: 900;
+  line-height: 0.95; letter-spacing: -0.01em;
+  color: var(--cream); margin-bottom: 0.5rem;
+}
+.hero-title span {
+  display: block;
+  background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 50%, #a06820 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-subtitle {
+  font-size: 1.35rem; font-style: italic; color: var(--muted);
+  max-width: 520px; margin: 1.8rem auto 2.8rem; line-height: 1.5;
+}
+.hero-cta-row {
+  display: flex; gap: 1.2rem; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 5rem;
+}
+
+/* Screenshot reel */
+.screenshot-reel {
+  width: 100%; max-width: 960px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr; gap: 12px;
+}
+.screenshot-main {
+  aspect-ratio: 16/10; background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 0.6rem;
+  position: relative; overflow: hidden;
+}
+.screenshot-main::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(74,124,158,0.04) 0%, transparent 60%);
+}
+.screenshot-side { display: flex; flex-direction: column; gap: 12px; }
+.screenshot-sm {
+  flex: 1; background: var(--surface); border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 0.5rem; min-height: 0;
+}
+.ph-icon { font-size: 1.8rem; opacity: 0.25; }
+.ph-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); opacity: 0.6;
+}
+
+/* INTRO */
+.intro {
+  background: var(--deep);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+}
+.intro-grid {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(3rem, 6vw, 6rem); align-items: start;
+}
+.intro-body p { margin-bottom: 1.1rem; color: var(--text); }
+.intro-pull { border-left: 2px solid var(--gold); padding-left: 1.8rem; }
+.pull-quote {
+  font-size: 1.45rem; font-style: italic;
+  line-height: 1.45; color: var(--cream); margin-bottom: 1rem;
+}
+.pull-attr {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+}
+
+/* FEATURES */
+.features-wrap { max-width: 1100px; margin: 0 auto; }
+.features-header { max-width: 520px; margin-bottom: 4rem; }
+.feature-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5px; background: var(--border); border: 1px solid var(--border);
+}
+.feature-card {
+  background: var(--deep); padding: 2.4rem 2rem;
+  position: relative; transition: background 0.2s;
+}
+.feature-card:hover { background: var(--surface); }
+.feature-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: transparent; transition: background 0.2s;
+}
+.feature-card:hover::before { background: var(--gold); }
+.feature-glyph { font-size: 1.5rem; margin-bottom: 1rem; display: block; }
+.feature-title {
+  font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 600;
+  letter-spacing: 0.1em; color: var(--cream); margin-bottom: 0.7rem; text-transform: uppercase;
+}
+.feature-body { font-size: 0.95rem; color: var(--muted); line-height: 1.6; }
+
+/* SHOWCASE */
+.showcase {
+  background: var(--deep);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+}
+.showcase-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(3rem, 6vw, 6rem); align-items: center;
+}
+.showcase-img {
+  aspect-ratio: 4/3; background: var(--surface); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 0.8rem; position: relative; overflow: hidden;
+}
+.showcase-img::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom right, rgba(201,146,58,0.05), transparent);
+}
+.showcase-body p { margin-bottom: 1rem; color: var(--text); }
+.stat-row { display: flex; gap: 2.5rem; margin-top: 2rem; flex-wrap: wrap; }
+.stat-num {
+  font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900;
+  color: var(--gold); line-height: 1; display: block;
+}
+.stat-label { font-size: 0.82rem; color: var(--muted); font-style: italic; }
+
+/* PLATFORMS */
+.platforms-wrap { max-width: 1100px; margin: 0 auto; text-align: center; }
+.platform-list {
+  display: flex; gap: 1.5rem; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 3rem;
+}
+.platform-badge {
+  padding: 0.7rem 1.8rem; border: 1px solid var(--border);
+  font-family: 'Cinzel', serif; font-size: 0.72rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); background: var(--surface);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DOWNLOADS PAGE
+═══════════════════════════════════════════════════════════════════ */
+.dl-page-header {
+  padding: 140px clamp(1.5rem,5vw,4rem) 5rem;
+  border-bottom: 1px solid var(--border); position: relative; overflow: hidden;
+}
+.dl-page-header::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 30% 60%, rgba(201,146,58,0.05) 0%, transparent 55%);
+}
+.dl-page-inner { max-width: 1100px; margin: 0 auto; }
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 900;
+  color: var(--cream); letter-spacing: 0.02em; line-height: 1.1; margin-bottom: 1rem;
+}
+.page-sub { font-size: 1.15rem; font-style: italic; color: var(--muted); max-width: 540px; }
+
+.dl-main {
+  max-width: 1100px; margin: 0 auto;
+  padding: 5rem clamp(1.5rem,5vw,4rem);
+  display: flex; flex-direction: column; gap: 4rem;
+}
+
+.dl-section-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-dim);
+  margin-bottom: 1.4rem; display: flex; align-items: center; gap: 1rem;
+}
+.dl-section-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+.dl-card {
+  background: var(--deep); border: 1px solid var(--border);
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 2rem; align-items: start; padding: 2.4rem;
+  position: relative; overflow: hidden; transition: border-color 0.2s;
+}
+.dl-card:hover { border-color: var(--gold-dim); }
+.dl-card::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 3px; bottom: 0;
+  background: var(--gold); opacity: 0; transition: opacity 0.2s;
+}
+.dl-card:hover::before { opacity: 1; }
+
+.dl-icon {
+  width: 64px; height: 64px; background: var(--surface); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; flex-shrink: 0;
+}
+.dl-name {
+  font-family: 'Cinzel', serif; font-size: 1.3rem;
+  font-weight: 600; color: var(--cream); margin-bottom: 0.3rem;
+}
+.dl-tagline { font-style: italic; color: var(--muted); font-size: 1rem; margin-bottom: 1rem; }
+.dl-desc {
+  font-size: 0.95rem; color: var(--text);
+  max-width: 580px; line-height: 1.6; margin-bottom: 1.2rem;
+}
+.dl-meta-row { display: flex; gap: 2rem; flex-wrap: wrap; }
+.dl-meta {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
+}
+.dl-meta span { color: var(--text); }
+
+.version-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(90,184,122,0.1); border: 1px solid rgba(90,184,122,0.25);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--green-lt);
+  margin-bottom: 1rem; align-self: flex-start;
+}
+.version-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green-lt);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.dl-buttons {
+  display: flex; flex-direction: column; gap: 0.7rem;
+  min-width: 200px; flex-shrink: 0; align-self: start;
+}
+.dl-btn {
+  display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 1.2rem;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.12em;
+  text-transform: uppercase; text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, color 0.2s; cursor: pointer;
+}
+.dl-btn:hover { background: rgba(201,146,58,0.08); border-color: var(--gold-dim); color: var(--gold-lt); }
+.dl-btn.primary { background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 600; }
+.dl-btn.primary:hover { background: var(--gold-lt); border-color: var(--gold-lt); color: var(--ink); }
+.dl-btn.soon { opacity: 0.4; cursor: default; pointer-events: none; }
+.dl-btn-os { font-size: 1rem; line-height: 1; }
+.dl-btn-label { flex: 1; }
+.dl-btn-size { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--muted); }
+
+/* Requirements */
+.reqs-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5px; background: var(--border); border: 1px solid var(--border);
+}
+.req-block { background: var(--deep); padding: 1.8rem 1.6rem; }
+.req-platform {
+  font-family: 'Cinzel', serif; font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--cream);
+  margin-bottom: 1rem;
+}
+.req-list { list-style: none; }
+.req-list li {
+  font-size: 0.9rem; color: var(--muted); padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(42,44,64,0.5);
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+}
+.req-list li:last-child { border-bottom: none; }
+.req-list li span { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text); }
+
+/* Install steps */
+.install-steps { counter-reset: step; display: flex; flex-direction: column; border: 1px solid var(--border); }
+.install-step {
+  counter-increment: step;
+  display: grid; grid-template-columns: 64px 1fr;
+  border-bottom: 1px solid var(--border); background: var(--deep); transition: background 0.15s;
+}
+.install-step:last-child { border-bottom: none; }
+.install-step:hover { background: var(--surface); }
+.step-num {
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 900;
+  color: var(--gold-dim); border-right: 1px solid var(--border); padding: 1.4rem 0;
+}
+.step-num::before { content: counter(step); }
+.step-body { padding: 1.4rem 1.8rem; }
+.step-title {
+  font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream); margin-bottom: 0.3rem;
+}
+.step-desc { font-size: 0.92rem; color: var(--muted); line-height: 1.55; }
+.step-code {
+  display: inline-block; margin-top: 0.5rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--gold-lt);
+  background: rgba(201,146,58,0.08); padding: 0.2rem 0.6rem; border: 1px solid rgba(201,146,58,0.15);
+}
+
+/* Changelog */
+.changelog { border: 1px solid var(--border); }
+.cl-entry { padding: 2rem 2.4rem; border-bottom: 1px solid var(--border); }
+.cl-entry:last-child { border-bottom: none; }
+.cl-header { display: flex; align-items: baseline; gap: 1.2rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.cl-version { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; color: var(--cream); }
+.cl-date { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+.cl-badge { padding: 0.15rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; }
+.cl-badge.latest { background: rgba(90,184,122,0.12); color: var(--green-lt); border: 1px solid rgba(90,184,122,0.25); }
+.cl-list { list-style: none; }
+.cl-list li { font-size: 0.95rem; color: var(--muted); padding: 0.25rem 0 0.25rem 1.2rem; position: relative; }
+.cl-list li::before { content: '–'; position: absolute; left: 0; color: var(--gold-dim); }
+
+/* ── FOOTER ──────────────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 3rem clamp(1.5rem,5vw,4rem);
+  display: flex; flex-direction: column; align-items: center; gap: 1.5rem; text-align: center;
+}
+.footer-logo { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; letter-spacing: 0.25em; color: var(--gold-dim); }
+.footer-links { display: flex; gap: 2rem; list-style: none; flex-wrap: wrap; justify-content: center; }
+.footer-links a {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; cursor: pointer; transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--gold); }
+.footer-copy { font-size: 0.85rem; color: var(--muted); opacity: 0.5; }
+
+/* ── ANIMATIONS ──────────────────────────────────────────────────── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+.hero-rule     { animation: fadeUp 0.7s 0.1s both; }
+.hero-eyebrow  { animation: fadeUp 0.7s 0.2s both; }
+.hero-title    { animation: fadeUp 0.8s 0.3s both; }
+.hero-subtitle { animation: fadeUp 0.7s 0.5s both; }
+.hero-cta-row  { animation: fadeUp 0.7s 0.65s both; }
+.screenshot-reel { animation: fadeUp 0.9s 0.8s both; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .intro-grid, .showcase-inner { grid-template-columns: 1fr; }
+  .screenshot-reel { grid-template-columns: 1fr; }
+  .screenshot-side { flex-direction: row; }
+  .screenshot-sm { min-height: 120px; }
+  .nav-links { display: none; }
+  .dl-card { grid-template-columns: 1fr; gap: 1.5rem; }
+  .dl-buttons { flex-direction: row; flex-wrap: wrap; min-width: unset; }
+  .dl-btn { flex: 1; min-width: 160px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────────────── -->
+<nav>
+  <span class="nav-logo" onclick="showPage('home')">LOREGLASS</span>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
+    <li><a onclick="showSection('features')" id="nav-features">Features</a></li>
+    <li><a onclick="showSection('showcase')" id="nav-showcase">The Waking Road</a></li>
+    <li><a onclick="showPage('downloads')" id="nav-downloads">Downloads</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     HOME PAGE
+═══════════════════════════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-rule"></div>
+    <p class="hero-eyebrow">Early Access — Free to Play</p>
+    <h1 class="hero-title">Lore<span>Glass</span></h1>
+    <p class="hero-subtitle">A story engine for readers who want stakes, for writers who want control, and for worlds that outlast a single book.</p>
+    <div class="hero-cta-row">
+      <button class="btn-primary" onclick="showPage('downloads')">Download Free</button>
+      <button class="btn-secondary" onclick="showSection('features')">Learn More</button>
+    </div>
+    <div class="screenshot-reel">
+      <div class="screenshot-main">
+        <span class="ph-icon">🖼</span>
+        <span class="ph-label">Main gameplay — prose + choices</span>
+      </div>
+      <div class="screenshot-side">
+        <div class="screenshot-sm">
+          <span class="ph-icon">⚔</span>
+          <span class="ph-label">Combat</span>
+        </div>
+        <div class="screenshot-sm">
+          <span class="ph-icon">🗺</span>
+          <span class="ph-label">World map</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTRO -->
+  <section class="intro">
+    <div class="intro-grid">
+      <div class="intro-body">
+        <div class="section-rule"></div>
+        <p class="section-eyebrow">What Is LoreGlass?</p>
+        <h2>Text adventure, grown up.</h2>
+        <p>LoreGlass sits between the gamebook you'd flip through looking for page 47 and a proper roleplaying game — without the table, the dice bag, or the arguing about rules. You read. You make choices. The world reacts.</p>
+        <p>Your character grows across books. Gold, gear, scars, and skills follow you from one story into the next. Die and your save is gone. The stakes are honest.</p>
+        <p>No subscriptions. No internet required. No ads or tracking. Books are folders — drop one in and it appears on your shelf. Everything you own, you own.</p>
+      </div>
+      <div class="intro-pull">
+        <p class="pull-quote">"The glass remembers everything you've seen in it."</p>
+        <p class="pull-attr">— LoreGlass tagline</p>
+        <br>
+        <p class="pull-quote" style="font-size:1.1rem; margin-top:2rem;">Every roll is visible. Every stat modifier is shown. You are never failed by a hidden number.</p>
+        <p class="pull-attr">— On transparent mechanics</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="features-wrap">
+      <div class="features-header">
+        <div class="section-rule"></div>
+        <p class="section-eyebrow">Engine Features</p>
+        <h2>Everything a story needs. Nothing it doesn't.</h2>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="feature-glyph">🎲</span><p class="feature-title">Transparent Rolls</p><p class="feature-body">Every dice roll is displayed in full — die result, stat applied, target number, margin of success or failure. No hidden math, no mystery.</p></div>
+        <div class="feature-card"><span class="feature-glyph">⚔</span><p class="feature-title">Turn-Based Combat</p><p class="feature-body">Initiative, armour, damage reduction, status effects. Single enemies or multi-target fights. Feats that change how combat plays. Stakes that matter.</p></div>
+        <div class="feature-card"><span class="feature-glyph">📖</span><p class="feature-title">Cross-Book Travel</p><p class="feature-body">One character across a whole library. Your gold, gear, and reputation carry between books. Authors can build worlds that connect to each other.</p></div>
+        <div class="feature-card"><span class="feature-glyph">💰</span><p class="feature-title">Living Economy</p><p class="feature-body">Silver, copper, gold. Regional markets with fluctuating prices. Trading is its own game — buy low in the capital, sell high at the coast.</p></div>
+        <div class="feature-card"><span class="feature-glyph">💀</span><p class="feature-title">Permadeath</p><p class="feature-body">Die and your save is erased. Not locked, not penalised — gone. It keeps the stakes real and every decision worth making.</p></div>
+        <div class="feature-card"><span class="feature-glyph">🔑</span><p class="feature-title">Keyword Memory</p><p class="feature-body">Choices set flags that persist across books. An NPC you helped three sessions ago might remember. A door you've been through might be different on return.</p></div>
+        <div class="feature-card"><span class="feature-glyph">🏆</span><p class="feature-title">Feat System</p><p class="feature-body">Earn permanent abilities as you play. Passive bonuses, active combat skills, triggered reactions. A veteran character is genuinely different to a new one.</p></div>
+        <div class="feature-card"><span class="feature-glyph">📝</span><p class="feature-title">Author Tools</p><p class="feature-body">Books are folders of JSON. The companion app lets you create, edit, and audit cards with no coding required. Drop a folder in and it appears in the library.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWCASE -->
+  <section class="showcase" id="showcase">
+    <div class="showcase-inner">
+      <div class="showcase-img">
+        <span class="ph-icon" style="font-size:2.5rem;">🌲</span>
+        <span class="ph-label">The Waking Road — Duskhollow</span>
+      </div>
+      <div class="showcase-body">
+        <div class="section-rule"></div>
+        <p class="section-eyebrow">Included Book</p>
+        <h2>The Waking Road</h2>
+        <p>The included starter book follows an unnamed traveller arriving in the market town of Duskhollow on the edge of the Ashwood. There is a missing boy. There is a wolf pack denning too close to the farms. There is a constable who keeps his own counsel, and a herbalist at the forest's edge who knows the names of things that shouldn't have names.</p>
+        <p>A complete story — with choices that matter, a world that exists beyond the margins, and threads that lead out of the region entirely, toward books not yet written.</p>
+        <div class="stat-row">
+          <div class="stat-item"><span class="stat-num">97</span><span class="stat-label">scenes &amp; locations</span></div>
+          <div class="stat-item"><span class="stat-num">3</span><span class="stat-label">towns to explore</span></div>
+          <div class="stat-item"><span class="stat-num">37</span><span class="stat-label">unique items</span></div>
+          <div class="stat-item"><span class="stat-num">15</span><span class="stat-label">learnable feats</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATFORMS -->
+  <section>
+    <div class="platforms-wrap">
+      <div class="section-rule" style="margin: 0 auto 1.6rem;"></div>
+      <p class="section-eyebrow">Availability</p>
+      <h2>Available Now</h2>
+      <p class="lead" style="margin: 0 auto 3rem;">LoreGlass runs natively on desktop and mobile. No account. No install size beyond the app itself.</p>
+      <div class="platform-list">
+        <span class="platform-badge">Windows</span>
+        <span class="platform-badge">Linux — Coming Soon</span>
+        <span class="platform-badge">Android — Coming Soon</span>
+        <span class="platform-badge">iOS — Coming Soon</span>
+      </div>
+      <button class="btn-primary" onclick="showPage('downloads')">Download LoreGlass</button>
+    </div>
+  </section>
+
+</div><!-- /page-home -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     DOWNLOADS PAGE
+═══════════════════════════════════════════════════════════════════ -->
+<div id="page-downloads" class="page">
+
+  <div class="dl-page-header">
+    <div class="dl-page-inner">
+      <h1 class="page-title">Downloads</h1>
+      <p class="page-sub">Free to play. No account required. Books live in a folder — add as many as you like.</p>
+    </div>
+  </div>
+
+  <div class="dl-main">
+
+    <!-- ENGINE -->
+    <div>
+      <p class="dl-section-label">The Engine</p>
+      <div class="dl-card">
+        <div class="dl-icon">📖</div>
+        <div class="dl-info">
+          <div class="version-tag"><div class="version-dot"></div>Latest — v0.9 Early Access</div>
+          <p class="dl-name">LoreGlass</p>
+          <p class="dl-tagline">The story engine. Includes The Waking Road.</p>
+          <p class="dl-desc">The full LoreGlass engine with built-in library browser, character creation, combat, trading, cross-book travel, and permadeath saves. Ships with The Waking Road — a complete 97-card starter adventure set in the town of Duskhollow.</p>
+          <div class="dl-meta-row">
+            <div class="dl-meta">Version <span>0.9-early</span></div>
+            <div class="dl-meta">Includes <span>The Waking Road</span></div>
+            <div class="dl-meta">Licence <span>Free</span></div>
+          </div>
+        </div>
+        <div class="dl-buttons">
+          <a href="#" class="dl-btn primary"><span class="dl-btn-os">⊞</span><span class="dl-btn-label">Windows</span><span class="dl-btn-size">— MB</span></a>
+          <a href="#" class="dl-btn"><span class="dl-btn-os">⌘</span><span class="dl-btn-label">macOS</span><span class="dl-btn-size">— MB</span></a>
+          <a href="#" class="dl-btn"><span class="dl-btn-os">🐧</span><span class="dl-btn-label">Linux</span><span class="dl-btn-size">— MB</span></a>
+          <a href="#" class="dl-btn"><span class="dl-btn-os">🤖</span><span class="dl-btn-label">Android</span><span class="dl-btn-size">— MB</span></a>
+          <a class="dl-btn soon"><span class="dl-btn-os">🍎</span><span class="dl-btn-label">iOS — Soon</span></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- REQUIREMENTS -->
+    <div>
+      <p class="dl-section-label">System Requirements</p>
+      <div class="reqs-grid">
+        <div class="req-block"><p class="req-platform">⊞ Windows</p><ul class="req-list"><li>OS<span>Windows 10 / 11</span></li><li>RAM<span>512 MB</span></li><li>Storage<span>100 MB + books</span></li><li>Graphics<span>OpenGL 3.3 / Vulkan</span></li></ul></div>
+        </div>
+    </div>
+
+    <!-- INSTALLATION -->
+    <div>
+      <p class="dl-section-label">Installation</p>
+      <div class="install-steps">
+        <div class="install-step"><div class="step-num"></div><div class="step-body"><p class="step-title">Download for your platform</p><p class="step-desc">Choose your OS from the buttons above. LoreGlass is a standalone executable — no installer required on desktop.</p></div></div>
+        <div class="install-step"><div class="step-num"></div><div class="step-body"><p class="step-title">Run the application</p><p class="step-desc">On Windows, run <span class="step-code">LoreGlass.exe</span> directly. On macOS, open <span class="step-code">LoreGlass.app</span> — you may need to allow it in Security &amp; Privacy on first launch.</p></div></div>
+        <div class="install-step"><div class="step-num"></div><div class="step-body"><p class="step-title">Create a character &amp; start playing</p><p class="step-desc">The Waking Road is included and ready to play. Hit <strong>Create Character</strong>, choose your race and background, then open the Library to begin.</p></div></div>
+        <div class="install-step"><div class="step-num"></div><div class="step-body"><p class="step-title">Add more books (optional)</p><p class="step-desc">In Settings, press <strong>Open Books Folder</strong>. Drop any LoreGlass book folder there and it appears in your Library immediately — no restart needed.</p></div></div>
+      </div>
+    </div>
+
+    <!-- CHANGELOG -->
+    <div>
+      <p class="dl-section-label">Release Notes</p>
+      <div class="changelog">
+        <div class="cl-entry">
+          <div class="cl-header"><span class="cl-version">v0.9</span><span class="cl-badge latest">Latest</span><span class="cl-date">Early Access</span></div>
+          <ul class="cl-list">
+            <li>Cross-book travel system — carry your character between installed books</li>
+            <li>Currency redesign — silver/copper/gold with regional market pricing</li>
+            <li>Background selection grid scales to number of options</li>
+            <li>Splash screen on launch with mainmenu.png support</li>
+            <li>Menu music loop fix for all AudioStream types</li>
+            <li>Notes tab — personal scratchpad, saved with character</li>
+            <li>Notice board: fixed story quests alongside generated bounties</li>
+            <li>Smithy and herbalist now return to town hub correctly</li>
+            <li>Wolf den bounty reworked — 4 pelts required</li>
+            <li>Rune fail path: new eddan_rune_fail and genna_stone_counsel cards</li>
+            <li>Gold displayed as integer — 10s not 10.0s</li>
+          </ul>
+        </div>
+        <div class="cl-entry">
+          <div class="cl-header"><span class="cl-version">v0.8</span><span class="cl-date">Early Access</span></div>
+          <ul class="cl-list">
+            <li>Feat system — 15 learnable abilities across passive, active, and triggered types</li>
+            <li>Classless character creation — race, background, and stat selection</li>
+            <li>Dojo added to The Waking Road — 8-card training sequence</li>
+            <li>Storage chests — deed ownership unlocks per-town item storage</li>
+          </ul>
+        </div>
+        <div class="cl-entry">
+          <div class="cl-header"><span class="cl-version">v0.7</span><span class="cl-date">Early Access</span></div>
+          <ul class="cl-list">
+            <li>Multi-enemy combat — players choose target each round</li>
+            <li>Trading economy — regional market profiles, cargo system, merchant funds</li>
+            <li>Three towns in The Waking Road: Duskhollow, Oakhaven, Iron Ridge</li>
+            <li>Typewriter effect with configurable speed setting</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /dl-main -->
+</div><!-- /page-downloads -->
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-logo">LOREGLASS</div>
+  <ul class="footer-links">
+    <li><a onclick="showPage('home')">Home</a></li>
+    <li><a onclick="showSection('features')">Features</a></li>
+    <li><a onclick="showSection('showcase')">The Waking Road</a></li>
+    <li><a onclick="showPage('downloads')">Downloads</a></li>
+  </ul>
+  <p class="footer-copy">LoreGlass — Early Access. All rights reserved.</p>
+</footer>
+
+<script>
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Update nav active state
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+}
+
+function showSection(id) {
+  showPage('home');
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }, 50);
+}
+</script>
+
+</body>
+</html>
