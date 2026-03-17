@@ -1,59 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LoreGlass — A New Kind of Story Engine</title>
 <meta name="title" content="LoreGlass — A New Kind of Story Engine">
 <meta name="description" content="A narrative RPG engine where every page is a world. Handcrafted prose meets deep RPG mechanics. Write worlds, not code.">
-
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://mythicrealms.github.io/LoreGlass/"> <meta property="og:title" content="LoreGlass — A New Kind of Story Engine">
+<meta property="og:url" content="https://mythicrealms.github.io/LoreGlass/">
+<meta property="og:title" content="LoreGlass — A New Kind of Story Engine">
 <meta property="og:description" content="Experience a living book with a full RPG system underneath. Stat checks, tactical combat, and cross-book travel.">
-<meta property="og:image" content="ttps://raw.githubusercontent.com/MythicRealms/LoreGlass/refs/heads/main/loreglassicon.png"> <meta property="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://raw.githubusercontent.com/MythicRealms/LoreGlass/refs/heads/main/loreglassicon.png">
+<meta property="twitter:card" content="summary_large_image">
 <meta property="twitter:url" content="https://mythicrealms.github.io/LoreGlass/">
 <meta property="twitter:title" content="LoreGlass — A New Kind of Story Engine">
 <meta property="twitter:description" content="A modular RPG engine where choices leave a mark. Build your character across authored worlds.">
 <meta property="twitter:image" content="https://raw.githubusercontent.com/MythicRealms/LoreGlass/refs/heads/main/loreglassicon.png">
-
 <meta name="theme-color" content="#c8922a">
- 
-  
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LoreGlass — Coming Soon</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap');
 
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
 :root {
-  --ink: #0e0c0a;
-  --parchment: #f2ead8;
-  --parchment-dark: #e8dcc4;
-  --gold: #c8922a;
-  --gold-light: #e8b84a;
-  --gold-pale: #f5e4b0;
-  --ember: #d4401a;
-  --ash: #6b6258;
-  --fog: #b8b0a4;
-  --deep: #1a1510;
+  --ink:           #0a0806;
+  --ink-mid:       #130f09;
+  --ink-warm:      #1a1410;
+  --parchment:     #f0e6d0;
+  --parchment-dim: #d4c8b0;
+  --parchment-fog: #9a9080;
+  --gold:          #c8922a;
+  --gold-light:    #e8b84a;
+  --gold-pale:     #f2dea0;
+  --gold-deep:     #8a6018;
+  --ember:         #c83818;
+  --ash:           #5a5248;
+  --rule:          rgba(200,146,42,0.18);
+  --rule-bright:   rgba(200,146,42,0.45);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--ink);
   color: var(--parchment);
-  font-family: 'Crimson Pro', Georgia, serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.7;
   overflow-x: hidden;
-  cursor: default;
 }
 
-/* ── NOISE OVERLAY ── */
-body::before {
+/* ── GRAIN ── */
+body::after {
   content: '';
   position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 9999; opacity: 0.4;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999; opacity: 0.35;
+  mix-blend-mode: overlay;
 }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1.2rem 3rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid transparent;
+  transition: all 0.4s ease;
+}
+nav.scrolled {
+  background: rgba(10,8,6,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom-color: var(--rule);
+}
+.nav-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--gold-pale), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.05em;
+}
+.nav-links {
+  display: flex; gap: 2.5rem; list-style: none;
+}
+.nav-links a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--parchment-fog);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold-light); }
 
 /* ── HERO ── */
 .hero {
@@ -62,675 +105,891 @@ body::before {
   place-items: center;
   position: relative;
   overflow: hidden;
-  padding: 4rem 2rem;
+  padding: 8rem 2rem 6rem;
 }
 
-.hero-bg {
+.hero-atmosphere {
   position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(200,146,42,0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(212,64,26,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 10%, rgba(200,146,42,0.05) 0%, transparent 60%),
-    linear-gradient(170deg, #0e0c0a 0%, #150f08 40%, #0e0c0a 100%);
+    radial-gradient(ellipse 90% 70% at 50% 20%, rgba(200,146,42,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 15% 85%, rgba(200,56,24,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 15%, rgba(200,146,42,0.04) 0%, transparent 55%),
+    linear-gradient(175deg, #0a0806 0%, #150f08 50%, #0a0806 100%);
 }
 
-/* Animated particles */
-.particles {
-  position: absolute; inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-.particle {
+/* Ember particles */
+.embers { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.ember {
   position: absolute;
-  width: 2px; height: 2px;
-  background: var(--gold);
   border-radius: 50%;
   opacity: 0;
-  animation: drift var(--dur) var(--delay) infinite ease-in-out;
+  animation: rise var(--t) var(--d) infinite ease-in-out;
 }
-@keyframes drift {
-  0%   { opacity: 0; transform: translateY(100vh) translateX(var(--dx)); }
-  10%  { opacity: var(--max-op); }
-  90%  { opacity: var(--max-op); }
-  100% { opacity: 0; transform: translateY(-20px) translateX(calc(var(--dx) + var(--waver))); }
+@keyframes rise {
+  0%   { opacity: 0; transform: translateY(0) translateX(0) scale(1); }
+  15%  { opacity: var(--op); }
+  85%  { opacity: var(--op); }
+  100% { opacity: 0; transform: translateY(calc(-1 * var(--h))) translateX(var(--x)) scale(0.3); }
 }
 
-/* Open book illustration */
-.book-container {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(700px, 90vw);
-  opacity: 0.06;
+/* Ghosted open-book SVG */
+.ghost-book {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -52%);
+  width: min(800px, 95vw);
+  opacity: 0.055;
   pointer-events: none;
 }
-.book-svg { width: 100%; }
 
 .hero-content {
   position: relative; z-index: 10;
   text-align: center;
-  max-width: 900px;
+  max-width: 860px;
 }
 
-.overline {
+.eyebrow {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.4em;
+  font-size: 0.65rem;
+  letter-spacing: 0.55em;
   color: var(--gold);
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem;
   opacity: 0;
-  animation: fadeUp 0.8s 0.2s forwards ease-out;
+  animation: ascend 0.9s 0.15s forwards cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.logo {
+h1.wordmark {
   font-family: 'Cinzel Decorative', serif;
-  font-size: clamp(3.5rem, 10vw, 8rem);
+  font-size: clamp(4rem, 12vw, 9.5rem);
   font-weight: 900;
-  line-height: 0.9;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #f5e4b0 0%, #c8922a 40%, #f5e4b0 60%, #e8b84a 100%);
+  line-height: 0.88;
+  letter-spacing: -0.025em;
+  background: linear-gradient(150deg, var(--gold-pale) 0%, var(--gold) 35%, var(--gold-pale) 55%, var(--gold-light) 80%, var(--gold-pale) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 60px rgba(200,146,42,0.3));
+  background-size: 200% 200%;
+  filter: drop-shadow(0 0 80px rgba(200,146,42,0.25));
   opacity: 0;
-  animation: fadeUp 1s 0.4s forwards ease-out;
+  animation: ascend 1.1s 0.35s forwards cubic-bezier(0.22, 1, 0.36, 1), shimmerFlow 8s 1.5s infinite ease-in-out;
+}
+@keyframes shimmerFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
 }
 
-.tagline {
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
+.hero-tagline {
+  font-size: clamp(1.25rem, 3vw, 1.9rem);
   font-style: italic;
   font-weight: 300;
-  color: var(--parchment-dark);
-  margin: 1.5rem 0 2.5rem;
+  color: var(--parchment-dim);
+  margin: 2rem 0 1rem;
+  line-height: 1.5;
   opacity: 0;
-  animation: fadeUp 0.8s 0.7s forwards ease-out;
+  animation: ascend 0.9s 0.65s forwards cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.coming-soon-badge {
-  display: inline-block;
-  border: 1px solid rgba(200,146,42,0.4);
-  border-radius: 2px;
-  padding: 0.6rem 2rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.3em;
-  color: var(--gold-light);
-  text-transform: uppercase;
-  margin-bottom: 3rem;
-  position: relative;
-  overflow: hidden;
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--parchment-fog);
+  max-width: 560px;
+  margin: 0 auto 3rem;
   opacity: 0;
-  animation: fadeUp 0.8s 0.9s forwards ease-out;
+  animation: ascend 0.9s 0.8s forwards cubic-bezier(0.22, 1, 0.36, 1);
 }
-.coming-soon-badge::before {
+
+.badge-row {
+  display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;
+  margin-bottom: 3.5rem;
+  opacity: 0;
+  animation: ascend 0.9s 0.95s forwards cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border: 1px solid var(--rule-bright);
+  padding: 0.5rem 1.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  position: relative; overflow: hidden;
+  border-radius: 1px;
+}
+.badge::after {
   content: '';
-  position: absolute; top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(200,146,42,0.15), transparent);
-  animation: shimmer 3s 1.5s infinite;
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(200,146,42,0.1), transparent);
+  transform: translateX(-100%);
+  animation: badgeShimmer 4s 2s infinite ease-in-out;
 }
-@keyframes shimmer { to { left: 100%; } }
+@keyframes badgeShimmer { to { transform: translateX(100%); } }
 
 .platforms {
-  display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;
+  display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;
   opacity: 0;
-  animation: fadeUp 0.8s 1.1s forwards ease-out;
+  animation: ascend 0.9s 1.1s forwards cubic-bezier(0.22, 1, 0.36, 1);
 }
 .platform {
-  display: flex; align-items: center; gap: 0.5rem;
-  padding: 0.5rem 1.2rem;
-  border: 1px solid rgba(200,146,42,0.25);
-  border-radius: 2px;
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.55rem 1.3rem;
+  border: 1px solid rgba(200,146,42,0.2);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   letter-spacing: 0.15em;
-  color: var(--fog);
+  color: var(--ash);
   text-transform: uppercase;
-  transition: all 0.3s ease;
+  transition: all 0.3s;
+  border-radius: 1px;
 }
-.platform:hover {
-  border-color: var(--gold);
-  color: var(--gold-light);
-  background: rgba(200,146,42,0.05);
-}
-.platform-icon { font-size: 1.1rem; }
+.platform:hover { border-color: var(--rule-bright); color: var(--gold-light); background: rgba(200,146,42,0.04); }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+@keyframes ascend {
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── DIVIDER ── */
-.divider {
-  display: flex; align-items: center; gap: 1rem;
-  max-width: 800px; margin: 0 auto; padding: 0 2rem;
+/* ── ORNAMENT RULE ── */
+.ornament {
+  display: flex; align-items: center; gap: 1.2rem;
+  max-width: 900px; margin: 0 auto; padding: 0 3rem;
 }
-.divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
-.divider-gem {
-  width: 8px; height: 8px;
+.orn-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.orn-diamond {
+  width: 7px; height: 7px;
   background: var(--gold);
   transform: rotate(45deg);
-  box-shadow: 0 0 10px var(--gold);
+  box-shadow: 0 0 12px rgba(200,146,42,0.7);
+}
+.orn-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.5em;
+  color: var(--gold-deep);
+  text-transform: uppercase;
 }
 
 /* ── SECTIONS ── */
-section { padding: 5rem 2rem; }
+section { padding: 6rem 3rem; }
+.section-inner { max-width: 1120px; margin: 0 auto; }
 
-.section-inner { max-width: 1100px; margin: 0 auto; }
-
-.section-label {
+.s-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.5em;
+  font-size: 0.6rem;
+  letter-spacing: 0.55em;
   color: var(--gold);
   text-transform: uppercase;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.8rem;
 }
 
-.section-title {
+.s-title {
   font-family: 'Cinzel Decorative', serif;
-  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-size: clamp(1.7rem, 4vw, 2.8rem);
   font-weight: 700;
-  margin-bottom: 1.5rem;
   color: var(--parchment);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
 }
 
-/* ── FOR PLAYERS ── */
-.for-players { background: linear-gradient(180deg, var(--ink) 0%, #120e08 100%); }
-
-.player-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-top: 3rem;
-}
-
-.player-card {
-  background: rgba(242,234,216,0.03);
-  border: 1px solid rgba(200,146,42,0.15);
-  border-radius: 4px;
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s ease;
-}
-.player-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0;
-  width: 100%; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-.player-card:hover { border-color: rgba(200,146,42,0.4); transform: translateY(-3px); }
-.player-card:hover::before { opacity: 1; }
-
-.card-icon { font-size: 2rem; margin-bottom: 1rem; }
-.card-title {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--gold-light);
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.05em;
-}
-.card-body {
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: var(--fog);
+.s-lead {
+  font-size: 1.15rem;
+  line-height: 1.85;
+  color: var(--parchment-fog);
+  max-width: 640px;
   font-weight: 300;
 }
 
-/* ── FOR AUTHORS ── */
+/* ── PLAYERS ── */
+.for-players {
+  background: linear-gradient(180deg, var(--ink) 0%, var(--ink-mid) 100%);
+}
+
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1px;
+  margin-top: 3.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--rule);
+}
+
+.player-card {
+  background: var(--ink);
+  padding: 2.2rem 2rem;
+  position: relative;
+  transition: background 0.3s;
+}
+.player-card:hover { background: rgba(200,146,42,0.025); }
+
+.card-icon {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  display: block;
+  filter: grayscale(0.3);
+}
+.card-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+.card-body {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--ash);
+  font-weight: 300;
+}
+
+/* ── AUTHORS ── */
 .for-authors {
-  background: linear-gradient(180deg, #120e08 0%, #0e0c0a 100%);
+  background: var(--ink-mid);
   position: relative;
 }
 .for-authors::before {
   content: '';
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(200,146,42,0.04) 0%, transparent 70%);
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(200,146,42,0.035) 0%, transparent 70%);
   pointer-events: none;
 }
 
-.author-features {
+.author-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
-  margin-top: 3rem;
-  border: 1px solid rgba(200,146,42,0.15);
-  border-radius: 4px;
+  margin-top: 3.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
   overflow: hidden;
 }
-@media (max-width: 640px) { .author-features { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .author-grid { grid-template-columns: 1fr; } }
 
-.author-feature {
-  padding: 2rem 2.5rem;
-  border-right: 1px solid rgba(200,146,42,0.1);
-  border-bottom: 1px solid rgba(200,146,42,0.1);
+.author-item {
+  padding: 2rem 2.4rem;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
   transition: background 0.3s;
+  position: relative;
 }
-.author-feature:hover { background: rgba(200,146,42,0.04); }
-.author-feature:nth-child(even) { border-right: none; }
+.author-item:hover { background: rgba(200,146,42,0.03); }
+.author-item:nth-child(even) { border-right: none; }
+.author-item:nth-last-child(-n+2) { border-bottom: none; }
+@media (max-width: 640px) {
+  .author-item { border-right: none; }
+  .author-item:last-child { border-bottom: none; }
+}
 
-.feature-num {
+.item-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  color: var(--gold);
+  font-size: 0.58rem;
+  color: var(--gold-deep);
   letter-spacing: 0.3em;
   margin-bottom: 0.5rem;
 }
-.feature-title {
-  font-family: 'Crimson Pro', serif;
-  font-size: 1.2rem;
+.item-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--parchment);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
 }
-.feature-desc {
-  font-size: 0.95rem;
-  line-height: 1.65;
-  color: var(--ash);
-}
-
-/* ── CHANGELOG ── */
-.changelog { background: var(--ink); }
-
-.timeline {
-  margin-top: 3rem;
-  position: relative;
-  padding-left: 2rem;
-}
-.timeline::before {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0;
-  width: 1px;
-  background: linear-gradient(180deg, var(--gold) 0%, rgba(200,146,42,0.2) 80%, transparent 100%);
-}
-
-.version-block {
-  margin-bottom: 2.5rem;
-  position: relative;
-  animation: none;
-}
-.version-block::before {
-  content: '';
-  position: absolute; left: -2.35rem; top: 0.4rem;
-  width: 8px; height: 8px;
-  background: var(--gold);
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(200,146,42,0.6);
-}
-.version-block.current::before {
-  background: var(--ember);
-  box-shadow: 0 0 12px var(--ember);
-  width: 10px; height: 10px;
-  left: -2.45rem; top: 0.3rem;
-}
-
-.version-tag {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem;
-  color: var(--gold);
-  letter-spacing: 0.2em;
-  margin-bottom: 0.3rem;
-}
-.version-block.current .version-tag { color: var(--ember); }
-
-.version-title {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 1rem;
-  color: var(--parchment);
-  margin-bottom: 0.5rem;
-}
-
-.version-notes {
+.item-desc {
   font-size: 0.95rem;
   line-height: 1.7;
   color: var(--ash);
-  list-style: none;
+  font-weight: 300;
 }
-.version-notes li { padding-left: 1rem; position: relative; }
-.version-notes li::before {
+
+/* ── MECHANICS STRIP ── */
+.mechanics {
+  background: var(--ink);
+  padding: 5rem 3rem;
+}
+.mechanics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2px;
+  margin-top: 3rem;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.mech-cell {
+  background: var(--ink);
+  padding: 1.8rem 1.5rem;
+  text-align: center;
+  transition: background 0.3s;
+}
+.mech-cell:hover { background: rgba(200,146,42,0.03); }
+.mech-icon { font-size: 1.8rem; margin-bottom: 0.8rem; display: block; }
+.mech-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.mech-desc { font-size: 0.9rem; color: var(--ash); line-height: 1.5; }
+
+/* ── CHANGELOG ── */
+.changelog {
+  background: linear-gradient(180deg, var(--ink-mid) 0%, var(--ink) 100%);
+}
+
+.timeline {
+  margin-top: 3.5rem;
+  position: relative;
+  padding-left: 2.5rem;
+}
+.timeline::before {
+  content: '';
+  position: absolute; left: 0; top: 0.6rem; bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg,
+    var(--gold) 0%,
+    rgba(200,146,42,0.4) 60%,
+    transparent 100%
+  );
+}
+
+.v-block {
+  margin-bottom: 2.8rem;
+  position: relative;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.v-block.visible { opacity: 1; transform: translateX(0); }
+
+.v-block::before {
+  content: '';
+  position: absolute; left: -2.7rem; top: 0.45rem;
+  width: 7px; height: 7px;
+  background: var(--gold-deep);
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+}
+.v-block.current::before {
+  background: var(--ember);
+  border-color: var(--ember);
+  box-shadow: 0 0 14px rgba(200,56,24,0.6);
+  width: 9px; height: 9px;
+  left: -2.8rem; top: 0.35rem;
+}
+
+.v-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--gold-deep);
+  letter-spacing: 0.2em;
+  margin-bottom: 0.3rem;
+}
+.v-block.current .v-tag { color: var(--ember); }
+
+.v-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.95rem;
+  color: var(--parchment);
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.02em;
+}
+
+.v-notes {
+  list-style: none;
+  font-size: 0.95rem;
+  color: var(--ash);
+  line-height: 1.75;
+}
+.v-notes li {
+  padding-left: 1.2rem;
+  position: relative;
+  margin-bottom: 0.15rem;
+}
+.v-notes li::before {
   content: '—';
   position: absolute; left: 0;
-  color: rgba(200,146,42,0.4);
+  color: rgba(200,146,42,0.3);
+  font-family: 'JetBrains Mono', monospace;
 }
+
+/* ── CURRENT BUILD HIGHLIGHT ── */
+.current-build {
+  background: rgba(200,56,24,0.04);
+  border: 1px solid rgba(200,56,24,0.2);
+  border-radius: 2px;
+  padding: 2.5rem 2.5rem 2rem;
+  margin-top: 3rem;
+}
+.current-build .v-title {
+  color: var(--ember);
+  font-size: 1.1rem;
+}
+.current-build .v-notes { color: var(--parchment-dim); }
+.current-build .v-notes li::before { color: rgba(200,56,24,0.4); }
 
 /* ── CLOSING ── */
 .closing {
   text-align: center;
-  padding: 6rem 2rem;
-  background: linear-gradient(180deg, var(--ink) 0%, #080604 100%);
+  padding: 8rem 3rem;
+  background: linear-gradient(180deg, var(--ink) 0%, #050402 100%);
+}
+
+.closing-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.45em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
 }
 
 .closing-quote {
+  font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
   font-weight: 300;
-  color: var(--parchment-dark);
-  max-width: 600px;
-  margin: 0 auto 2rem;
-  line-height: 1.6;
+  color: var(--parchment-dim);
+  max-width: 640px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.55;
 }
-.closing-attribution {
+
+.closing-attr {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   color: var(--ash);
   letter-spacing: 0.3em;
 }
 
 footer {
-  padding: 2rem;
-  text-align: center;
-  border-top: 1px solid rgba(200,146,42,0.1);
+  padding: 2.2rem 3rem;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
-footer p {
+.footer-credit {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  color: rgba(107,98,88,0.6);
+  font-size: 0.6rem;
+  color: rgba(90,82,72,0.7);
   letter-spacing: 0.2em;
+}
+.footer-credit span { color: var(--gold-deep); }
+.footer-links {
+  display: flex; gap: 2rem;
+}
+.footer-links a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: rgba(90,82,72,0.5);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--gold); }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 768px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  section { padding: 4rem 1.5rem; }
+  footer { padding: 1.5rem; flex-direction: column; align-items: center; text-align: center; }
 }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">LoreGlass</div>
+  <ul class="nav-links">
+    <li><a href="#players">For Players</a></li>
+    <li><a href="#authors">For Authors</a></li>
+    <li><a href="#mechanics">Mechanics</a></li>
+    <li><a href="#chronicle">Chronicle</a></li>
+  </ul>
+</nav>
+
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="particles" id="particles"></div>
+  <div class="hero-atmosphere"></div>
+  <div class="embers" id="embers"></div>
 
-  <!-- Ghost book -->
-  <div class="book-container">
-    <svg class="book-svg" viewBox="0 0 700 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M350 380 C200 360 80 320 60 80 L350 40 L640 80 C620 320 500 360 350 380Z" stroke="#c8922a" stroke-width="1" fill="none"/>
-      <line x1="350" y1="40" x2="350" y2="380" stroke="#c8922a" stroke-width="1.5"/>
-      <path d="M110 120 Q230 100 350 110" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
-      <path d="M110 150 Q230 135 350 143" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
-      <path d="M110 180 Q230 168 350 174" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
-      <path d="M110 210 Q230 200 350 205" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
-      <path d="M110 240 Q230 232 350 236" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
-      <path d="M590 120 Q470 100 350 110" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
-      <path d="M590 150 Q470 135 350 143" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
-      <path d="M590 180 Q470 168 350 174" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
-      <path d="M590 210 Q470 200 350 205" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
-      <path d="M590 240 Q470 232 350 236" stroke="#c8922a" stroke-width="0.5" opacity="0.5"/>
+  <div class="ghost-book">
+    <svg viewBox="0 0 800 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M400 440 C230 415 80 365 55 80 L400 35 L745 80 C720 365 570 415 400 440Z" stroke="#c8922a" stroke-width="0.8" fill="none"/>
+      <line x1="400" y1="35" x2="400" y2="440" stroke="#c8922a" stroke-width="1.2"/>
+      <!-- Left page lines -->
+      <path d="M105 130 Q250 112 400 120" stroke="#c8922a" stroke-width="0.4" opacity="0.6"/>
+      <path d="M100 162 Q250 147 400 153" stroke="#c8922a" stroke-width="0.4" opacity="0.5"/>
+      <path d="M100 194 Q250 182 400 186" stroke="#c8922a" stroke-width="0.4" opacity="0.45"/>
+      <path d="M100 226 Q250 216 400 220" stroke="#c8922a" stroke-width="0.4" opacity="0.4"/>
+      <path d="M102 258 Q252 250 400 253" stroke="#c8922a" stroke-width="0.4" opacity="0.35"/>
+      <path d="M105 290 Q253 283 400 286" stroke="#c8922a" stroke-width="0.4" opacity="0.3"/>
+      <path d="M110 322 Q255 317 400 319" stroke="#c8922a" stroke-width="0.4" opacity="0.22"/>
+      <!-- Right page lines -->
+      <path d="M695 130 Q550 112 400 120" stroke="#c8922a" stroke-width="0.4" opacity="0.6"/>
+      <path d="M700 162 Q550 147 400 153" stroke="#c8922a" stroke-width="0.4" opacity="0.5"/>
+      <path d="M700 194 Q550 182 400 186" stroke="#c8922a" stroke-width="0.4" opacity="0.45"/>
+      <path d="M700 226 Q550 216 400 220" stroke="#c8922a" stroke-width="0.4" opacity="0.4"/>
+      <path d="M698 258 Q548 250 400 253" stroke="#c8922a" stroke-width="0.4" opacity="0.35"/>
+      <path d="M695 290 Q547 283 400 286" stroke="#c8922a" stroke-width="0.4" opacity="0.3"/>
+      <path d="M690 322 Q545 317 400 319" stroke="#c8922a" stroke-width="0.4" opacity="0.22"/>
+      <!-- Decorative elements -->
+      <circle cx="400" cy="35" r="4" fill="#c8922a" opacity="0.5"/>
+      <circle cx="400" cy="440" r="3" fill="#c8922a" opacity="0.3"/>
     </svg>
   </div>
 
   <div class="hero-content">
-    <p class="overline">A new kind of story engine</p>
-    <h1 class="logo">LoreGlass</h1>
-    <p class="tagline">Where every page is a world, and every choice leaves a mark.</p>
-    <div class="coming-soon-badge">Coming Soon</div>
+    <p class="eyebrow">A new kind of story engine</p>
+    <h1 class="wordmark">LoreGlass</h1>
+    <p class="hero-tagline">Where every page is a world, and every choice leaves a mark.</p>
+    <p class="hero-sub">A narrative RPG engine built on handcrafted prose, deep mechanics, and a character who travels between authored worlds — carrying everything they've earned.</p>
+    <div class="badge-row">
+      <div class="badge">✦ Coming Soon</div>
+      <div class="badge">v0.95.8 — Active Development</div>
+    </div>
     <div class="platforms">
-      <div class="platform"><span class="platform-icon">🖥</span> PC / Mac</div>
-      <div class="platform"><span class="platform-icon">📱</span> Android</div>
-      <div class="platform"><span class="platform-icon">🌐</span> HTML5 / Web</div>
+      <div class="platform"><span>🖥</span> PC / Mac</div>
+      <div class="platform"><span>📱</span> Android</div>
+      <div class="platform"><span>🌐</span> HTML5 / Web</div>
     </div>
   </div>
 </section>
 
-<div class="divider"><div class="divider-line"></div><div class="divider-gem"></div><div class="divider-line"></div></div>
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">For Players</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
 
 <!-- FOR PLAYERS -->
-<section class="for-players">
+<section class="for-players" id="players">
   <div class="section-inner">
-    <p class="section-label">For Players</p>
-    <h2 class="section-title">Your story. Your character. Your choices.</h2>
-    <p style="font-size:1.15rem;line-height:1.8;color:var(--fog);max-width:680px;">
-      LoreGlass is a narrative RPG engine that plays like a living book. 
-      Each adventure is an authored world you explore through prose, choices, 
-      and consequences — with a full RPG system running underneath.
-    </p>
+    <p class="s-label reveal">For Players</p>
+    <h2 class="s-title reveal">Your story. Your character. Your choices.</h2>
+    <p class="s-lead reveal">LoreGlass plays like a living book. Each adventure is an authored world you explore through prose, choices, and consequences — with a complete RPG system running silently underneath every page.</p>
     <div class="player-grid">
       <div class="player-card">
-        <div class="card-icon">📖</div>
+        <span class="card-icon">📖</span>
         <div class="card-title">Books You Can Lose Yourself In</div>
-        <div class="card-body">Each LoreGlass book is a handcrafted story world. Prose, atmosphere, characters with memory — not menus and stats. Your character grows across books, carrying scars and gold between worlds.</div>
+        <div class="card-body">Each LoreGlass book is a handcrafted story world — prose, atmosphere, characters with memory. Not menus and loading screens. Your character grows across books, carrying scars, coin, and history between worlds.</div>
       </div>
       <div class="player-card">
-        <div class="card-icon">⚔</div>
+        <span class="card-icon">⚔</span>
         <div class="card-title">A Real RPG System</div>
-        <div class="card-body">Six core stats. A full equipment system with seven slots. Feats, backgrounds, statuses, and a tactical combat engine with initiative, flanking, and weapon procs. Your build matters.</div>
+        <div class="card-body">Six core stats. A full equipment system with seven slots. Feats, backgrounds, scrolls, and a tactical combat engine with initiative, weapon procs, and status effects. Your build matters from character creation through every book you enter.</div>
       </div>
       <div class="player-card">
-        <div class="card-icon">💰</div>
-        <div class="card-title">Trade, Barter, Survive</div>
-        <div class="card-body">Gold and silver tracked in real denominations. Dynamic merchants with living economies. Bounty boards with generated jobs. Buy a rapier, sell wolf pelts, fund your next expedition.</div>
+        <span class="card-icon">🧪</span>
+        <div class="card-title">Inventory That Travels</div>
+        <div class="card-body">Every item is a unique instance — weapon, armour, scroll, or trade good — snapshotted at acquisition. Carry a healing draught from one world into another. The blade you earned in a war story fights just as well in a fantasy kingdom.</div>
       </div>
       <div class="player-card">
-        <div class="card-icon">📜</div>
-        <div class="card-title">Quests That Remember</div>
-        <div class="card-body">Promise Genna you'll find her son. Accept the wolf den bounty. The quest tab tracks everything — active, complete, failed. Story flags persist across sessions. The world remembers what you did.</div>
+        <span class="card-icon">📜</span>
+        <div class="card-title">A Character Who Remembers</div>
+        <div class="card-body">Persistent keywords, story memories, and chronicle entries survive New Runs and cross-book travel. A Memory tab tracks what your character has learned, witnessed, and earned — across every world they've visited.</div>
       </div>
       <div class="player-card">
-        <div class="card-icon">🎲</div>
-        <div class="card-title">Dice That Mean Something</div>
-        <div class="card-body">Stat checks with real stakes. Roll 1d10 + Might to force the gate. Roll Cunning to bluff the guard. Success and failure both branch the story forward — no dead ends, just consequences.</div>
+        <span class="card-icon">🎲</span>
+        <div class="card-title">Dice With Real Stakes</div>
+        <div class="card-body">Stat checks with actual consequences. Roll 1d10 + your stat against a difficulty. Both success and failure branch the story forward — no dead ends, only different paths through the consequence of your roll.</div>
       </div>
       <div class="player-card">
-        <div class="card-icon">🗺</div>
+        <span class="card-icon">🌐</span>
         <div class="card-title">Cross-Book Travel</div>
-        <div class="card-body">Your character is not bound to a single story. Travel between books carrying your inventory, feats, and history. Community authors can build worlds that connect to each other.</div>
+        <div class="card-body">Your character is not bound to one story. Travel between books carrying inventory, feats, memories, and persistent flags. Books can link directly to each other — or send you back to the Library to choose your next world.</div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"><div class="divider-line"></div><div class="divider-gem"></div><div class="divider-line"></div></div>
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">For Authors</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
 
 <!-- FOR AUTHORS -->
-<section class="for-authors">
+<section class="for-authors" id="authors">
   <div class="section-inner">
-    <p class="section-label">For Authors</p>
-    <h2 class="section-title">Write worlds. Not code.</h2>
-    <p style="font-size:1.15rem;line-height:1.8;color:var(--fog);max-width:680px;">
-      LoreGlass ships with a full companion authoring app. Every card, quest, item, 
-      and enemy is defined in plain JSON — but you never have to write a line by hand.
-      The Author Companion turns your imagination into a living game.
-    </p>
-    <div class="author-features">
-      <div class="author-feature">
-        <div class="feature-num">01</div>
-        <div class="feature-title">Card-Based Story Authoring</div>
-        <div class="feature-desc">Write prose, set choices, chain cards together. Each card is a scene. Conditions gate choices. Effects reshape the world. The Author Companion's canvas tab shows everything at once.</div>
+    <p class="s-label reveal">For Authors</p>
+    <h2 class="s-title reveal">Write worlds. Not code.</h2>
+    <p class="s-lead reveal">LoreGlass ships with a full companion authoring app. Every card, quest, item, and enemy lives in plain JSON — but you never write a line by hand. The Author Companion turns your vision into a living game.</p>
+    <div class="author-grid">
+      <div class="author-item reveal">
+        <div class="item-num">01</div>
+        <div class="item-title">Card-Based Story Authoring</div>
+        <div class="item-desc">Write prose, set choices, chain cards across six tabs — Canvas, Choices, Conditions, Effects, Encounter, Library. Auto-saves on card switch. Jump to any linked card with one click. Audit the whole book for broken links and missing conditions.</div>
       </div>
-      <div class="author-feature">
-        <div class="feature-num">02</div>
-        <div class="feature-title">Item & Equipment Library</div>
-        <div class="feature-desc">Define weapons, armour, consumables and potions in a structured editor. Set slot, damage, AC bonus, sell price, and lore text. No JSON required — the engine reads it all at book load.</div>
+      <div class="author-item reveal">
+        <div class="item-num">02</div>
+        <div class="item-title">Full Item Library</div>
+        <div class="item-desc">Define weapons, armour, scrolls, consumables, trade goods and quest items in a structured editor. Type-driven UI shows only the fields that matter — combat stats for gear, use_effect rows for consumables, on_equip triggers for both.</div>
       </div>
-      <div class="author-feature">
-        <div class="feature-num">03</div>
-        <div class="feature-title">Quest & Bounty Systems</div>
-        <div class="feature-desc">Build story quests on your bounty board with full tracking: active, complete, failed. Set keywords, descriptions, rewards. Players see them in the Quests tab the moment they accept.</div>
+      <div class="author-item reveal">
+        <div class="item-num">03</div>
+        <div class="item-title">Races & Backgrounds</div>
+        <div class="item-desc">Define your world's playable races with per-stat spinboxes, HP, starting gold, description, and advantages summary. Create backgrounds with stat bonuses, starting keywords, and gold modifiers. Character creation auto-populates from your JSON.</div>
       </div>
-      <div class="author-feature">
-        <div class="feature-num">04</div>
-        <div class="feature-title">Feats & Backgrounds</div>
-        <div class="feature-desc">Give players build identity. Define feats with triggers (passive, active, on-hit, low HP). Create backgrounds with stat bonuses and starting gear. The character creation screen auto-populates.</div>
+      <div class="author-item reveal">
+        <div class="item-num">04</div>
+        <div class="item-title">Conditions & Effects</div>
+        <div class="item-desc">Every choice checks conditions — keyword, stat, quest state, inventory, story memory — and fires effects that reshape the world. 16 condition types. 26 effect types. give_item, set_story_kw, set_memory_kw, teach_feat, and more. No scripting required.</div>
       </div>
-      <div class="author-feature">
-        <div class="feature-num">05</div>
-        <div class="feature-title">Combat Cards</div>
-        <div class="feature-desc">Any card can trigger a full multi-round combat with named enemies, custom stats, status-on-hit effects, and flee/victory navigation. The engine handles all the dice math.</div>
+      <div class="author-item reveal">
+        <div class="item-num">05</div>
+        <div class="item-title">Combat & Merchant Cards</div>
+        <div class="item-desc">Any card can trigger full multi-round combat with named enemies, custom stats, and status-on-hit effects. Merchant cards get structured buy/sell row editors. The engine handles all dice math, initiative, DR, and market pricing.</div>
       </div>
-      <div class="author-feature">
-        <div class="feature-num">06</div>
-        <div class="feature-title">Merchants & Economies</div>
-        <div class="feature-desc">Drop a merchant card and fill structured sell/buy rows. The engine tracks merchant funds, stock, and market pricing by town. No scripting — just fill in the fields.</div>
+      <div class="author-item reveal">
+        <div class="item-num">06</div>
+        <div class="item-title">Feats, Quests & Bounties</div>
+        <div class="item-desc">Define feats with triggers (passive, active, on-hit, low HP, combat start). Build story quests with full tracking — active, complete, failed. Bounty boards pull from fixed quest rows or generated daily jobs per town.</div>
       </div>
-      <div class="author-feature">
-        <div class="feature-num">07</div>
-        <div class="feature-title">Condition & Effect System</div>
-        <div class="feature-desc">Every choice can check conditions (keyword, stat, quest state, gold) and fire effects (give items, set flags, modify stats, start quests). Complex branching with zero code.</div>
+      <div class="author-item reveal">
+        <div class="item-num">07</div>
+        <div class="item-title">Cross-Book & Library Links</div>
+        <div class="item-desc">Any choice can travel to another book, return to a previous world via _prev_book, or exit to the Library with _library — for story endings, chapter breaks, and world-spanning narrative design. All from a simple popup.</div>
       </div>
-      <div class="author-feature">
-        <div class="feature-num">08</div>
-        <div class="feature-title">Project Audit</div>
-        <div class="feature-desc">The Audit tab scans your whole book for broken links, orphaned cards, and keywords set but never read — or read but never set. Ship clean stories with confidence.</div>
+      <div class="author-item reveal">
+        <div class="item-num">08</div>
+        <div class="item-title">Project Audit</div>
+        <div class="item-desc">Scan the entire book for broken card links, orphaned cards, and keywords set but never read — or read but never set. Now tracks story_kw, memory_kw, has_item conditions and give_item effects. Ship clean stories with confidence.</div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"><div class="divider-line"></div><div class="divider-gem"></div><div class="divider-line"></div></div>
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">The System</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
+<!-- MECHANICS -->
+<section class="mechanics" id="mechanics">
+  <div class="section-inner">
+    <p class="s-label reveal">Under the Hood</p>
+    <h2 class="s-title reveal">A full RPG in every book.</h2>
+    <p class="s-lead reveal">LoreGlass doesn't simulate an RPG — it runs one. Every stat, every item slot, every status effect is live state. Authors choose how much of it to surface.</p>
+    <div class="mechanics-grid">
+      <div class="mech-cell reveal">
+        <span class="mech-icon">⚔</span>
+        <div class="mech-label">Combat</div>
+        <div class="mech-desc">Initiative rolls, d10 attacks, DR reduction, multi-enemy, status-on-hit</div>
+      </div>
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🛡</span>
+        <div class="mech-label">7 Equipment Slots</div>
+        <div class="mech-desc">Main, off-hand, head, body, legs, feet, back — all tracked on the character</div>
+      </div>
+      <div class="mech-cell reveal">
+        <span class="mech-icon">📦</span>
+        <div class="mech-label">Instance Inventory</div>
+        <div class="mech-desc">Every item is a unique snapshot — stats and lore travel between books intact</div>
+      </div>
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🧪</span>
+        <div class="mech-label">Scrolls & Consumables</div>
+        <div class="mech-desc">heal_hp, cure_status, apply_status, modify_vars — use from Items tab anytime</div>
+      </div>
+      <div class="mech-cell reveal">
+        <span class="mech-icon">💫</span>
+        <div class="mech-label">Status Effects</div>
+        <div class="mech-desc">Poisoned, burning, bleeding, regenerating, stunned, cursed — tick every card</div>
+      </div>
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🗝</span>
+        <div class="mech-label">4 Keyword Buckets</div>
+        <div class="mech-desc">Book, quest, story (survives New Run), and memory (permanent chronicle)</div>
+      </div>
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🎲</span>
+        <div class="mech-label">Stat Rolls</div>
+        <div class="mech-desc">1d10 + any stat vs DC — success and fail branches, optional bonus modifier</div>
+      </div>
+      <div class="mech-cell reveal">
+        <span class="mech-icon">💰</span>
+        <div class="mech-label">Economy</div>
+        <div class="mech-desc">Silver integers, dynamic markets, bounty boards, merchant buy/sell per town</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">Development Chronicle</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
 
 <!-- CHANGELOG -->
-<section class="changelog">
+<section class="changelog" id="chronicle">
   <div class="section-inner">
-    <p class="section-label">Development Chronicle</p>
-    <h2 class="section-title">From First Page to Engine</h2>
+    <p class="s-label reveal">Development Chronicle</p>
+    <h2 class="s-title reveal">From First Page to Engine</h2>
+    <p class="s-lead reveal">LoreGlass began as a single Godot 4 scene. What follows is an honest record of how it became something else entirely.</p>
+
     <div class="timeline">
 
-      <div class="version-block">
-        <div class="version-tag">v0.1 — The First Spark</div>
-        <div class="version-title">Proof of Concept</div>
-        <ul class="version-notes">
-          <li>Single scene Godot 4 prototype with hardcoded cards and choices</li>
-          <li>Basic prose display with choice buttons</li>
-          <li>First JSON card format established</li>
+      <div class="v-block">
+        <div class="v-tag">v0.1 — The First Spark</div>
+        <div class="v-title">Proof of Concept</div>
+        <ul class="v-notes">
+          <li>Single-scene Godot 4 prototype — hardcoded cards, hardcoded choices</li>
+          <li>Prose label, choice buttons, the most basic loop proven</li>
+          <li>First JSON card format sketched out</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.2 — The Book System</div>
-        <div class="version-title">Dynamic Card Loading</div>
-        <ul class="version-notes">
-          <li>JSON-driven card loading from book folders</li>
-          <li>Book library screen and character selection</li>
-          <li>First persistent keyword system — story flags that survive sessions</li>
-          <li>Basic save/load via .dat files</li>
+      <div class="v-block">
+        <div class="v-tag">v0.2 — The Book System</div>
+        <div class="v-title">Dynamic Card Loading</div>
+        <ul class="v-notes">
+          <li>JSON-driven card loading from book folders on disk</li>
+          <li>Library screen and character selection screen</li>
+          <li>First persistent keyword system — story flags that outlive sessions</li>
+          <li>Save/load via per-character .dat files</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.3 — Characters Live</div>
-        <div class="version-title">Character Creation & Stats</div>
-        <ul class="version-notes">
-          <li>Full character creation: name, race, background</li>
-          <li>Six core stats (Might, Finesse, Grit, Cunning, Charisma, Lore)</li>
-          <li>Race presets with stat arrays and starting gold</li>
+      <div class="v-block">
+        <div class="v-tag">v0.3 — Characters Live</div>
+        <div class="v-title">Character Creation & Stats</div>
+        <ul class="v-notes">
+          <li>Full 3-step character creation: name, race, background</li>
+          <li>Six core stats: Might, Finesse, Grit, Cunning, Charisma, Lore</li>
+          <li>Race presets with full stat arrays and starting gold</li>
           <li>HUD tabs: Stats, Items, Equipment</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.4 — Swords and Wounds</div>
-        <div class="version-title">Combat Engine</div>
-        <ul class="version-notes">
-          <li>Turn-based combat with initiative rolls</li>
-          <li>Player and enemy attack resolution (d10 + stat vs AC)</li>
+      <div class="v-block">
+        <div class="v-tag">v0.4 — Swords and Wounds</div>
+        <div class="v-title">Combat Engine</div>
+        <ul class="v-notes">
+          <li>Turn-based multi-round combat with initiative rolls</li>
+          <li>Attack resolution: 1d10 + Finesse vs AC, player and enemy</li>
           <li>DR damage reduction system</li>
           <li>Status effects: poisoned, burning, bleeding, stunned, frozen</li>
-          <li>Flee, victory, and defeat navigation</li>
+          <li>Flee, victory, and permadeath defeat navigation</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.5 — The Market</div>
-        <div class="version-title">Economy & Merchants</div>
-        <ul class="version-notes">
+      <div class="v-block">
+        <div class="v-tag">v0.5 — The Market</div>
+        <div class="v-title">Economy & Merchants</div>
+        <ul class="v-notes">
           <li>Merchant card type with structured buy/sell rows</li>
-          <li>Gold stored as silver integers (100s = 1g)</li>
-          <li>Dynamic market pricing with town-specific multipliers</li>
+          <li>Currency stored as silver integers — 100s = 1g</li>
+          <li>Dynamic market pricing with per-town multipliers</li>
           <li>Merchant funds, stock tracking, and cargo encumbrance</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.6 — Notice Board</div>
-        <div class="version-title">Quests & Bounties</div>
-        <ul class="version-notes">
-          <li>Bounty board card type with generated daily jobs</li>
-          <li>Fixed story quest rows with accept/complete/fail keywords</li>
-          <li>Quest progress tracking and turn-in at merchants</li>
-          <li>Active quest reminder in stats HUD</li>
+      <div class="v-block">
+        <div class="v-tag">v0.6 — Notice Board</div>
+        <div class="v-title">Quests & Bounties</div>
+        <ul class="v-notes">
+          <li>Bounty board card type with generated daily jobs per town</li>
+          <li>Fixed story quest rows with accept, complete, and fail keywords</li>
+          <li>Quest progress bar and turn-in at merchant cards</li>
+          <li>Active quest reminder shown in the Stats HUD</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.7 — Between Worlds</div>
-        <div class="version-title">Cross-Book Travel</div>
-        <ul class="version-notes">
+      <div class="v-block">
+        <div class="v-tag">v0.7 — Between Worlds</div>
+        <div class="v-title">Cross-Book Travel</div>
+        <ul class="v-notes">
           <li>goto_book link type for cross-book navigation</li>
-          <li>Book state wipe on arrival, breadcrumb system</li>
-          <li>_prev_book and _prev_card magic values</li>
-          <li>Transition overlays with custom titles</li>
-          <li>User book folder (user://Books/) shadow-overrides built-ins</li>
+          <li>Breadcrumb system: _prev_book and _prev_card magic values</li>
+          <li>Transition overlay with custom title text</li>
+          <li>not_installed_label for books the player doesn't have yet</li>
+          <li>User book folder (user://Books/) shadows and extends built-ins</li>
+          <li>_library destination — ends a book cleanly and returns player to Library</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.8 — The Author's Desk</div>
-        <div class="version-title">Author Companion App</div>
-        <ul class="version-notes">
-          <li>Full companion authoring app (LoreGlassAuthor.gd)</li>
-          <li>6 tabs: Canvas, Choices, Conditions, Effects, Encounter, Library</li>
-          <li>Directory + Recent card explorer with start_card pinned</li>
+      <div class="v-block">
+        <div class="v-tag">v0.8 — The Author's Desk</div>
+        <div class="v-title">Author Companion App</div>
+        <ul class="v-notes">
+          <li>Full companion authoring tool (LoreGlassAuthor.gd)</li>
+          <li>Six tabs: Canvas, Choices, Conditions, Effects, Encounter, Library</li>
+          <li>Directory + Recent card explorer, start_card pinned and highlighted</li>
           <li>Structured editors for combat, merchant, and bounty board cards</li>
-          <li>Condition and effect dropdowns with tooltips — no JSON required</li>
+          <li>Condition and effect dropdowns with full tooltips</li>
           <li>Project Audit: broken links, orphaned cards, keyword index</li>
-          <li>Save All button, dirty-state tracking</li>
+          <li>Auto-save on card switch with notification; jump-to-card → button</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.9 — Feats & Lore</div>
-        <div class="version-title">Feats, Backgrounds, Stat Rolls</div>
-        <ul class="version-notes">
-          <li>Feat system with passive, active, proc, and trigger types</li>
+      <div class="v-block">
+        <div class="v-tag">v0.9 — Feats & Lore</div>
+        <div class="v-title">Feats, Backgrounds, Stat Rolls</div>
+        <ul class="v-notes">
+          <li>Feat system with passive, active, on-hit, low-HP, and combat-start triggers</li>
           <li>Background library with stat bonuses and starting keywords</li>
-          <li>Stat roll choice type (d10 + stat vs DC, success/fail branch)</li>
-          <li>Combat feats: active buttons in combat, cooldown tracking</li>
+          <li>Stat roll choice type — 1d10 + stat vs DC with success/fail branch</li>
           <li>Resurrection tokens and on-death intercept</li>
-          <li>Typewriter text effect with skip button</li>
-          <li>Splash screen with animated fade and tween intro</li>
+          <li>Typewriter prose effect with skip button and configurable speed</li>
+          <li>UI themes — eight presets, applied instantly, saved to settings</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.95 — The Quest System</div>
-        <div class="version-title">Quest Keywords & Tracking</div>
-        <ul class="version-notes">
-          <li>quest_keywords dictionary — separate from book_keywords</li>
-          <li>Quest registry stores metadata keyed by keyword</li>
-          <li>Quests tab: active (📌), complete (✅), failed (✗)</li>
-          <li>Condition types: quest_active, quest_complete, quest_failed</li>
-          <li>WakingRoad_v2: 13-card Duskhollow book with inn, smithy, bounty board</li>
+      <div class="v-block">
+        <div class="v-tag">v0.95 — The Living World</div>
+        <div class="v-title">Quest System & Story Flags</div>
+        <ul class="v-notes">
+          <li>quest_keywords dictionary — separate from book and persistent keywords</li>
+          <li>Quest registry with metadata keyed by keyword ID</li>
+          <li>Quests tab: active, complete, failed — all rendered with status icons</li>
+          <li>Condition types: quest_active, quest_complete, quest_failed, quest_not_active</li>
+          <li>Story keywords (survive New Run) and memory keywords (permanent chronicle)</li>
+          <li>Memories HUD tab: Learned section and Chronicle section with descriptions</li>
         </ul>
       </div>
 
-      <div class="version-block">
-        <div class="version-tag">v0.95.5 — The Item Library</div>
-        <div class="version-title">items.json & Structured Items</div>
-        <ul class="version-notes">
-          <li>items.json as the central item registry — weapons, armour, consumables</li>
-          <li>Hardcoded WEAPON_ITEMS / ARMOR_ITEMS migrated to items.json</li>
+      <div class="v-block">
+        <div class="v-tag">v0.95.5 — The Item Library</div>
+        <div class="v-title">items.json & Structured Items</div>
+        <ul class="v-notes">
+          <li>items.json as the central item registry — weapons, armour, consumables, trade goods</li>
           <li>Slot fields: main, off, head, body, legs, feet, back</li>
-          <li>Lore field — item descriptions shown inline in Equip tab</li>
-          <li>use_effect structured editor in Author Companion (no JSON)</li>
-          <li>feats.json and backgrounds.json editors added to Library tab</li>
+          <li>Lore field — item descriptions shown inline in Equip tab expand panel</li>
+          <li>use_effect structured editor in Author Companion — heal_hp, apply_status, cure_status</li>
+          <li>on_equip / on_unequip effect rows per item</li>
+          <li>feats.json, backgrounds.json, and races.json editors added to Library tab</li>
+          <li>Book-defined races load on top of engine built-ins (same id = override, new id = added)</li>
         </ul>
       </div>
 
-      <div class="version-block current">
-        <div class="version-tag">v0.95.8 — Checkpoint ★ Current</div>
-        <div class="version-title">Full Equipment Slot System</div>
-        <ul class="version-notes">
-          <li>Seven equipment slots tracked in variables (slot_main through slot_back)</li>
-          <li>Equip tab: all slots visible, tap item name to expand lore/stats inline</li>
-          <li>recalculate_combat_stats reads exclusively from slot variables</li>
-          <li>Two-handed weapons block the off-hand slot</li>
-          <li>Cannot sell an equipped item — must unequip first</li>
-          <li>Currency displayed as silver then gold (60s 5g format)</li>
-          <li>Main / Stats / Items / Equip / Quests / Notes tab layout</li>
-          <li>Stats tab: six core stats with bars + feats in two-column layout</li>
-          <li>Notes tab: Save button bottom-right, auto-hides with tab</li>
-          <li>Author Companion: slot dropdown, hands toggle, lore field per item</li>
-          <li>All $ node paths replaced with safe get_node_or_null getters</li>
+      <div class="v-block current">
+        <div class="v-tag">v0.95.8 — Checkpoint ★ Current</div>
+        <div class="v-title">Instance Inventory & Full HUD Rebuild</div>
+        <ul class="v-notes">
+          <li>Instance-based inventory — every item is a unique snapshot with its own iid</li>
+          <li>Stackable vs unique: trade goods use qty, gear gets one record per physical item</li>
+          <li>Item snapshots travel cross-book — a sword from one world works in another with zero definition overlap</li>
+          <li>Direct sell at 20% of base value from Items tab; equipped items blocked until unequipped</li>
+          <li>Scrolls (type: scroll) shown on Main HUD as emoji+qty; consumables in Items tab only</li>
+          <li>heal_hp, apply_status, cure_status wired into apply_effect — potions and scrolls fully functional</li>
+          <li>Regeneration status ticks every card transition — both "regeneration" and "regenerating" status names supported</li>
+          <li>has_item, has_story_kw, has_memory_kw, not_story_kw as live condition types</li>
+          <li>give_item and remove_item as card and choice effect types</li>
+          <li>unload_character() — clean slate on delete, create, and main menu return; no state bleed between characters</li>
+          <li>Legacy potions integer removed from Main HUD; all consumables now live in unified inventory</li>
+          <li>Items HUD: Weapons, Armour, Consumables, Scrolls, Trade Goods, Commodities, Quest Items, Other</li>
+          <li>Author Companion: type-driven item row visibility, stackable checkbox, races tab, save buttons synchronous</li>
+          <li>Audit expanded to track all 16 condition types and all effect types that set or read state</li>
         </ul>
       </div>
 
@@ -738,55 +997,79 @@ footer p {
   </div>
 </section>
 
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
 <!-- CLOSING -->
-<div class="divider"><div class="divider-line"></div><div class="divider-gem"></div><div class="divider-line"></div></div>
 <section class="closing">
-  <p style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.3em;color:var(--gold);margin-bottom:2.5rem;text-transform:uppercase;">
-    Conceived &amp; Directed by Grey Hammond
-  </p>
+  <p class="closing-kicker">Conceived &amp; Directed by Grey Hammond</p>
   <p class="closing-quote">"Every story is a door. LoreGlass builds the frame."</p>
-  <p class="closing-attribution">— Development continues. Wishlist coming soon.</p>
+  <p class="closing-attr">— Development continues. Wishlist coming soon.</p>
 </section>
 
 <footer>
-  <p style="margin-bottom:0.6rem;color:var(--ash);font-size:0.7rem;letter-spacing:0.25em;">
-    Conceived &amp; Directed by &nbsp;<span style="color:var(--gold-light);">Grey Hammond</span>
-  </p>
-  <p>LoreGlass Engine &nbsp;·&nbsp; Built with Godot 4 &nbsp;·&nbsp; © 2025 &nbsp;·&nbsp; All rights reserved</p>
- <a href="playtestv0958.html">v0958</a>
+  <div class="footer-credit">
+    Conceived &amp; Directed by &nbsp;<span>Grey Hammond</span>
+    &nbsp;·&nbsp; LoreGlass Engine &nbsp;·&nbsp; Built with Godot 4 &nbsp;·&nbsp; © 2025
+  </div>
+  <div class="footer-links">
+    <a href="playtestv0958.html">Playtest v0.95.8</a>
+  </div>
 </footer>
 
 <script>
-// Floating particles
-const container = document.getElementById('particles');
-for (let i = 0; i < 40; i++) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  p.style.left = Math.random() * 100 + '%';
-  p.style.setProperty('--dur', (8 + Math.random() * 12) + 's');
-  p.style.setProperty('--delay', (Math.random() * 10) + 's');
-  p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px');
-  p.style.setProperty('--waver', (Math.random() * 40 - 20) + 'px');
-  p.style.setProperty('--max-op', (0.2 + Math.random() * 0.5).toString());
-  container.appendChild(p);
+// ── NAV scroll state ──
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+// ── Ember particles ──
+const emberContainer = document.getElementById('embers');
+const EMBER_TYPES = [
+  { size: 2, color: '#e8b84a', maxOp: 0.55 },
+  { size: 1.5, color: '#c8922a', maxOp: 0.4 },
+  { size: 1, color: '#f2dea0', maxOp: 0.3 },
+];
+for (let i = 0; i < 55; i++) {
+  const e = document.createElement('div');
+  e.className = 'ember';
+  const type = EMBER_TYPES[Math.floor(Math.random() * EMBER_TYPES.length)];
+  const size = type.size + Math.random() * 1.5;
+  e.style.cssText = `
+    left: ${Math.random() * 100}%;
+    bottom: ${Math.random() * 20}%;
+    width: ${size}px;
+    height: ${size}px;
+    background: ${type.color};
+    box-shadow: 0 0 ${size * 2}px ${type.color};
+    --t: ${9 + Math.random() * 14}s;
+    --d: ${Math.random() * 12}s;
+    --op: ${type.maxOp * (0.6 + Math.random() * 0.4)};
+    --h: ${80 + Math.random() * 60}vh;
+    --x: ${(Math.random() - 0.5) * 120}px;
+  `;
+  emberContainer.appendChild(e);
 }
 
-// Scroll reveal
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.style.opacity = '1';
-      e.target.style.transform = 'translateY(0)';
+// ── Scroll reveal ──
+const revealEls = document.querySelectorAll('.reveal, .v-block, .player-card, .author-item, .mech-cell');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      // Stagger children in same parent
+      const siblings = [...entry.target.parentElement.children].filter(c =>
+        c.classList.contains(entry.target.className.split(' ')[0])
+      );
+      const idx = siblings.indexOf(entry.target);
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, Math.min(idx * 60, 400));
+      io.unobserve(entry.target);
     }
   });
-}, { threshold: 0.1 });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-document.querySelectorAll('.player-card, .author-feature, .version-block').forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(16px)';
-  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-  observer.observe(el);
-});
+revealEls.forEach(el => io.observe(el));
 </script>
 </body>
 </html>
