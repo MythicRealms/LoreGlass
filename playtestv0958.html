@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoreGlass — Playtest Guide v0.95.8</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:       #1a1610;
+    --parchment: #f5edd8;
+    --aged:      #e8d9b8;
+    --gold:      #c9952a;
+    --gold-lt:   #e8b84b;
+    --rust:      #8b3a2a;
+    --moss:      #3a6b3a;
+    --slate:     #4a5568;
+    --dim:       #7a6e5e;
+    --rule:      #c9b89040;
+    --pass:      #2d6e2d;
+    --fail:      #8b1a1a;
+    --warn:      #7a5a00;
+    --pass-bg:   #eaf3ea;
+    --fail-bg:   #f8eaea;
+    --warn-bg:   #fdf5e0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.7;
+    padding: 0;
+  }
+
+  /* Texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 40px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ── */
+  .masthead {
+    text-align: center;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 40px;
+    margin-bottom: 50px;
+  }
+  .masthead-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .masthead h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .masthead-sub {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
+  }
+  .masthead-intro {
+    font-style: italic;
+    color: var(--slate);
+    max-width: 580px;
+    margin: 0 auto;
+    font-size: 16px;
+  }
+
+  /* ── Progress bar ── */
+  .progress-wrap {
+    background: var(--aged);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 50px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .progress-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+  .progress-bar-outer {
+    flex: 1;
+    height: 8px;
+    background: #d4c49880;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-lt));
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gold);
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* ── Section headers ── */
+  .section {
+    margin-bottom: 48px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+  }
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 19px;
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .section-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-left: auto;
+  }
+  .badge-engine  { background: #e8e0f8; color: #3c3489; }
+  .badge-content { background: #eaf3ea; color: #2d6e2d; }
+  .badge-hud     { background: #e8f0f8; color: #185fa5; }
+  .badge-author  { background: #fdf0e0; color: #7a4500; }
+  .badge-cross   { background: #f8e8e8; color: #8b1a1a; }
+
+  .section-desc {
+    font-size: 15px;
+    color: var(--dim);
+    font-style: italic;
+    margin-bottom: 18px;
+    padding-left: 2px;
+  }
+
+  /* ── Test items ── */
+  .test-item {
+    background: white;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--aged);
+    border-radius: 0 4px 4px 0;
+    padding: 14px 18px 14px 16px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-left-color 0.2s, background 0.2s;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .test-item:hover { border-left-color: var(--gold); }
+  .test-item.pass  { border-left-color: var(--pass); background: var(--pass-bg); }
+  .test-item.fail  { border-left-color: var(--fail); background: var(--fail-bg); }
+  .test-item.skip  { border-left-color: var(--warn); background: var(--warn-bg); opacity: 0.8; }
+
+  .test-check {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid #c9b890;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .test-item.pass .test-check { background: var(--pass); border-color: var(--pass); color: white; }
+  .test-item.fail .test-check { background: var(--fail); border-color: var(--fail); color: white; }
+  .test-item.skip .test-check { background: var(--warn); border-color: var(--warn); color: white; }
+
+  .test-body { flex: 1; }
+  .test-title {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .test-item.pass .test-title { color: var(--pass); }
+  .test-item.fail .test-title { color: var(--fail); }
+
+  .test-steps {
+    margin-top: 8px;
+    display: none;
+  }
+  .test-item.expanded .test-steps { display: block; }
+
+  .test-steps ol {
+    padding-left: 20px;
+    margin: 6px 0;
+  }
+  .test-steps li {
+    font-size: 15px;
+    color: var(--slate);
+    margin-bottom: 4px;
+  }
+  .test-steps li strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .test-expect {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--aged);
+    border-radius: 3px;
+    font-size: 14px;
+    color: var(--slate);
+  }
+  .test-expect strong {
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    display: block;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .test-note {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--dim);
+    font-style: italic;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: #e8d9b880;
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--rust);
+  }
+
+  .test-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    padding: 5px 12px;
+    border-radius: 2px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+  .btn-pass { border-color: var(--pass); color: var(--pass); background: transparent; }
+  .btn-pass:hover { background: var(--pass); color: white; }
+  .btn-fail { border-color: var(--fail); color: var(--fail); background: transparent; }
+  .btn-fail:hover { background: var(--fail); color: white; }
+  .btn-skip { border-color: var(--warn); color: var(--warn); background: transparent; }
+  .btn-skip:hover { background: var(--warn); color: white; }
+  .btn-reset { border-color: var(--dim); color: var(--dim); background: transparent; }
+  .btn-reset:hover { background: var(--dim); color: white; }
+
+  .notes-field {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px 10px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 14px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: white;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 56px;
+    display: none;
+  }
+  .test-item.fail .notes-field { display: block; }
+
+  /* ── JSON snippets ── */
+  .json-block {
+    margin-top: 10px;
+    background: #1a1610;
+    border-radius: 4px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #e8d9b8;
+    overflow-x: auto;
+    display: none;
+  }
+  .test-item.expanded .json-block { display: block; }
+  .json-key   { color: #e8b84b; }
+  .json-str   { color: #8bc98b; }
+  .json-num   { color: #80b3d9; }
+  .json-bool  { color: #d9a070; }
+  .json-comment { color: #5a5248; font-style: italic; }
+
+  /* ── Summary ── */
+  .summary {
+    background: var(--aged);
+    border: 2px solid var(--gold);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-top: 60px;
+    text-align: center;
+  }
+  .summary h2 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .summary-cell {
+    background: white;
+    border-radius: 3px;
+    padding: 14px 8px;
+  }
+  .summary-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 28px;
+    display: block;
+  }
+  .summary-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    display: block;
+    margin-top: 4px;
+  }
+  .num-pass { color: var(--pass); }
+  .num-fail { color: var(--fail); }
+  .num-skip { color: var(--warn); }
+  .num-total { color: var(--gold); }
+
+  .export-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    padding: 10px 24px;
+    border: 1.5px solid var(--gold);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--gold);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .export-btn:hover { background: var(--gold); color: white; }
+
+  /* ── Divider ── */
+  .section-rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 40px 0;
+  }
+
+  @media print {
+    body { background: white; }
+    body::before { display: none; }
+    .test-steps { display: block !important; }
+    .json-block { display: block !important; }
+    .btn, .export-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="masthead">
+    <div class="masthead-eyebrow">Internal QA Document</div>
+    <h1>LoreGlass</h1>
+    <div class="masthead-sub">Playtest Guide — Engine v0.95.8</div>
+    <p class="masthead-intro">Work through each section in order. Every test maps to a specific engine feature. Mark pass, fail, or skip — failures auto-open a notes field. Export the results when done.</p>
+  </div>
+
+  <div class="progress-wrap">
+    <span class="progress-label">Progress</span>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="prog-bar"></div></div>
+    <span class="progress-count" id="prog-count">0 / 0</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 1 — CHARACTER CREATION                         -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-1">
+    <div class="section-header">
+      <span class="section-num">I</span>
+      <span class="section-title">Character Creation</span>
+      <span class="section-badge badge-engine">Engine</span>
+    </div>
+    <p class="section-desc">Covers the 3-step character builder, race presets, background bonuses, and initial save.</p>
+
+    <div class="test-item" data-id="t1">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Create a new character — all 3 steps complete</div>
+        <div class="test-steps">
+          <ol>
+            <li>Launch the game. From the main menu, choose <strong>Create Character</strong>.</li>
+            <li>Step 1 — Enter a name. Press Enter or click Next.</li>
+            <li>Step 2 — Select a race. Confirm the preview card updates with correct stats and HP.</li>
+            <li>Step 3 — Select a background. Confirm bonus stats and gold modifier display correctly.</li>
+            <li>Click <strong>Create</strong>. Confirm you return to the main menu with the character name shown.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Character name shown in main menu subtitle. <code>.dat</code> save file created in user:// directory.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t1','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t1','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t1','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t1',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t2">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Race stat presets apply correctly</div>
+        <div class="test-steps">
+          <ol>
+            <li>Create a Dwarf character. After creation, open the Stats HUD tab.</li>
+            <li>Verify: Might 7, Finesse 3, Grit 8, Cunning 4, Charisma 3, Lore 3.</li>
+            <li>Verify HP = 18, starting gold = 3000s (30g).</li>
+            <li>Repeat with an Elf — Finesse 8, Lore 7, HP 10, gold 4000s.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Stats exactly match <code>RACE_PRESETS</code> in GlobalState. No rounding errors.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t2','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t2','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t2','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t2',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t3">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Background stat bonuses stack on top of race</div>
+        <div class="test-steps">
+          <ol>
+            <li>Create a Human Mercenary. Human base stats are all 5.</li>
+            <li>Mercenary gives: Might +1, Grit +2, gold −500s.</li>
+            <li>Open Stats tab. Verify Might = 6, Grit = 7, gold = 3000s (3500 − 500).</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Stat bonuses applied on top of race. Gold modifier correctly subtracted.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t3','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t3','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t3','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t3',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t4">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Character limit enforced at 4</div>
+        <div class="test-steps">
+          <ol>
+            <li>Create 4 characters. Return to main menu.</li>
+            <li>Attempt to create a 5th. The button should show <strong>MAX 4 REACHED</strong> and be disabled.</li>
+            <li>Delete one character via the Select Character screen. Confirm the button re-enables.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>5th creation blocked. Deletion correctly frees a slot. File removed from disk.</div>
+          <div class="test-note">Bug B2 fixed — delete now uses relative path. Verify the file is actually gone from user:// after deletion.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t4','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t4','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t4','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t4',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 2 — STORY ENGINE                               -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-2">
+    <div class="section-header">
+      <span class="section-num">II</span>
+      <span class="section-title">Story Engine</span>
+      <span class="section-badge badge-content">Content</span>
+    </div>
+    <p class="section-desc">Card loading, typewriter, choice conditions, stat rolls, and card-level effects.</p>
+
+    <div class="test-item" data-id="t5">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Start story — loads start_card correctly</div>
+        <div class="test-steps">
+          <ol>
+            <li>From the library, open <strong>WakingRoad_v2</strong>.</li>
+            <li>Click Begin / Start Over. Confirm the prose label fills with the start card text.</li>
+            <li>Confirm the typewriter animation plays and the Skip button is visible.</li>
+            <li>Click Skip. Confirm all text appears instantly and Skip button hides.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Typewriter runs at configured speed. Skip reveals all text. Choice buttons appear after text loads.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t5','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t5','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t5','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t5',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t6">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Condition-gated choices — keyword check</div>
+        <div class="test-steps">
+          <ol>
+            <li>Find a card with a choice gated by a <code>keyword</code> condition the character does NOT have.</li>
+            <li>Verify the button is either hidden (if <code>hide_if_fails: true</code>) or shown as disabled with the fail label in brackets.</li>
+            <li>Use the dev card to grant the keyword. Return to that card and confirm the button now appears/enables.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Hidden buttons stay hidden. Disabled buttons show fail label. Met conditions enable the button.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t6','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t6','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t6','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t6',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t7">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Stat roll — success and failure paths</div>
+        <div class="test-steps">
+          <ol>
+            <li>Find a choice with a <code>roll</code> block (stat check).</li>
+            <li>Click it. Verify the roll summary shows: die result, stat value, total vs DC, margin.</li>
+            <li>Wait 3.5s. Confirm the correct card loads (success_goto or fail_goto).</li>
+            <li>Test both outcomes if possible (reload / dev card to adjust stats).</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Roll display clearly shows all components. Correct card loads after delay. No double-navigation.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t7','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t7','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t7','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t7',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t8">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Save and resume — progress preserved</div>
+        <div class="test-steps">
+          <ol>
+            <li>Advance a few cards into the story. Note the current card ID (shown in pause menu).</li>
+            <li>Press Menu → Main Menu.</li>
+            <li>Return to the Library and choose the same book. Confirm it resumes at the correct card.</li>
+            <li>Confirm gold, HP, and any keywords set during play are preserved.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Progress resumes exactly where left off. All state intact.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t8','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t8','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t8','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t8',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t9">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Dev card — one-time claim guard</div>
+        <div class="test-steps">
+          <ol>
+            <li>Navigate to <code>dev_card</code>. Click <strong>Claim 500g + 3 potions</strong>.</li>
+            <li>Verify gold and potions increase. Verify the button disappears (hidden by <code>hide_if_fails</code>).</li>
+            <li>Navigate away and return to <code>dev_card</code>. Confirm the claim button is still gone.</li>
+            <li>Confirm gold/potions did NOT increase again on re-entry (no card-level effect firing).</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Claim button hidden after use. Values do not increase on re-visits. DEV_GOLD_CLAIMED keyword set.</div>
+          <div class="test-note">Content fix C1 — card-level effect removed. Verify no double-grant on re-entry.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t9','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t9','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t9','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t9',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 3 — INVENTORY SYSTEM (NEW)                     -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-3">
+    <div class="section-header">
+      <span class="section-num">III</span>
+      <span class="section-title">Inventory System</span>
+      <span class="section-badge badge-engine">New Feature</span>
+    </div>
+    <p class="section-desc">The core new system — instance-based inventory, snapshots, stackables, equip/unequip, direct sell.</p>
+
+    <div class="test-item" data-id="t10">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">give_item effect — item appears in inventory</div>
+        <div class="test-steps">
+          <ol>
+            <li>On any card, trigger an effect containing <code>give_item</code>. Use the dev card or a JSON card with:</li>
+          </ol>
+          <div class="json-block">
+<span class="json-comment">// In a card's effect block or choice effect:</span>
+{
+  <span class="json-key">"give_item"</span>: { <span class="json-key">"id"</span>: <span class="json-str">"wolf_pelt"</span>, <span class="json-key">"qty"</span>: <span class="json-num">3</span> }
+}
+          </div>
+          <ol start="2">
+            <li>Open the Items HUD tab. Confirm <strong>Wolf Pelt x3</strong> appears under Trade Goods.</li>
+            <li>Confirm the item shows its label, emoji, and sell price (20% of base).</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Item appears with correct qty. Stackable — one record, qty = 3. Sell price = floor(sell × 0.20).</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t10','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t10','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t10','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t10',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t11">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Unique item instances — two swords are separate</div>
+        <div class="test-steps">
+          <ol>
+            <li>Give the character an Iron Sword twice via two separate <code>give_item</code> calls.</li>
+            <li>Open Items tab. Confirm two separate Iron Sword entries appear, each with their own iid.</li>
+            <li>Equip one. Confirm the equipped one shows ★ and the other stays unequipped.</li>
+            <li>Confirm both persist after saving and reloading.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Two distinct instances. Only one can be equipped at a time. Both save correctly with separate iids.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t11','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t11','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t11','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t11',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t12">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Equip and unequip — combat stats update</div>
+        <div class="test-steps">
+          <ol>
+            <li>Note unarmed stats: DMG 2, +Hit 0.</li>
+            <li>Give and equip a weapon (e.g. Iron Sword: DMG 6, +Hit 1).</li>
+            <li>Check Main HUD — confirm DMG and +Hit update immediately.</li>
+            <li>Open Equipment tab — confirm Main Hand slot shows the sword.</li>
+            <li>Unequip it. Confirm stats revert to unarmed.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Stats reflect equipped item. Unequip reverts. Equipment tab shows correct slot states.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t12','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t12','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t12','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t12',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t13">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Direct sell from inventory — 20% value</div>
+        <div class="test-steps">
+          <ol>
+            <li>Give the character a wolf pelt (base sell: 80s).</li>
+            <li>Open Items tab. Confirm sell link shows <strong>Sell 16s</strong> (80 × 0.20 = 16).</li>
+            <li>Click sell. Confirm 16s added to gold. Confirm pelt removed from inventory.</li>
+            <li>Attempt to sell an equipped weapon. Confirm it shows "Unequip to sell" message.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Sell price = floor(base_sell × 0.20). Item removed after sell. Equipped items blocked.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t13','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t13','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t13','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t13',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t14">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Old save migration — keywords become inventory</div>
+        <div class="test-steps">
+          <ol>
+            <li>Load a character save file that predates the inventory system (has <code>HAS_IRON_SWORD</code> in keywords, no inventory array).</li>
+            <li>Confirm the game loads without error.</li>
+            <li>Open the Items tab. Confirm the Iron Sword now appears as a proper inventory instance.</li>
+            <li>Confirm trade good quantities from <code>book_vars</code> also migrated correctly.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Seamless migration. Old saves work. No items lost. iid generated for each migrated item.</div>
+          <div class="test-note">If no old saves are available, create one manually by editing a .dat file to remove the inventory key.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t14','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t14','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t14','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t14',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 4 — KEYWORD BUCKETS (NEW)                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-4">
+    <div class="section-header">
+      <span class="section-num">IV</span>
+      <span class="section-title">Keyword Buckets</span>
+      <span class="section-badge badge-engine">New Feature</span>
+    </div>
+    <p class="section-desc">story_keywords and memory_keywords — survive New Run, display in Memories tab.</p>
+
+    <div class="test-item" data-id="t15">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">set_story_kw — survives New Run, shown in Memories tab</div>
+        <div class="test-steps">
+          <ol>
+            <li>On a card, trigger an effect with <code>set_story_kw: ["WR_LEARNED_SWORDFORM"]</code>.</li>
+            <li>Open Memories HUD tab. Confirm it appears under <strong>Learned</strong>.</li>
+            <li>Start a New Run on the same book (Start Over).</li>
+            <li>Open Memories tab again. Confirm <strong>WR_LEARNED_SWORDFORM</strong> is still there.</li>
+            <li>Confirm <code>book_keywords</code> from the previous run are gone.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>story_keyword persists through New Run. book_keywords wiped. Memories tab shows it.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t15','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t15','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t15','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t15',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t16">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">set_memory_kw — structured memory displayed with description</div>
+        <div class="test-steps">
+          <ol>
+            <li>Trigger an effect with:</li>
+          </ol>
+          <div class="json-block">
+{
+  <span class="json-key">"set_memory_kw"</span>: {
+    <span class="json-key">"Saved_Village_WakingRoad"</span>: <span class="json-str">"Rescued the villagers of Ashford from the wolf pack."</span>
+  }
+}
+          </div>
+          <ol start="2">
+            <li>Open Memories tab. Confirm it appears under <strong>Chronicle</strong> with the description in italics.</li>
+            <li>Start a New Run. Confirm the memory persists.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Memory key shown bold, description shown in italic below. Survives New Run.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t16','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t16','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t16','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t16',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t17">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">clear_story_kw — explicit wipe works</div>
+        <div class="test-steps">
+          <ol>
+            <li>Set a story keyword via an effect.</li>
+            <li>On a later card, trigger <code>clear_story_kw: ["WR_LEARNED_SWORDFORM"]</code>.</li>
+            <li>Open Memories tab. Confirm the keyword is gone.</li>
+            <li>Start a New Run. Confirm it's still gone (was already wiped).</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Explicit clear removes story keyword immediately. Does not reappear after New Run.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t17','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t17','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t17','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t17',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 5 — COMBAT                                     -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-5">
+    <div class="section-header">
+      <span class="section-num">V</span>
+      <span class="section-title">Combat</span>
+      <span class="section-badge badge-engine">Engine</span>
+    </div>
+    <p class="section-desc">Initiative, attack rolls, status effects, multi-enemy, auto-resolve, and victory/defeat paths.</p>
+
+    <div class="test-item" data-id="t18">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Combat initiates correctly — initiative shown</div>
+        <div class="test-steps">
+          <ol>
+            <li>Navigate to a combat card in WakingRoad_v2.</li>
+            <li>Confirm the prose label shows initiative order: both player and enemy initiatives displayed.</li>
+            <li>Confirm HP bars for all enemies are shown with correct max HP.</li>
+            <li>Confirm the player's HP bar and AC/DR are shown.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Initiative line shown on round 0. All combatants visible with HP bars. Attack button present.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t18','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t18','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t18','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t18',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t19">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Attack roll uses equipped weapon stats</div>
+        <div class="test-steps">
+          <ol>
+            <li>Equip an Iron Sword (DMG 6, +Hit 1) before entering combat.</li>
+            <li>Attack. Confirm the combat log shows the weapon name and correct DMG value.</li>
+            <li>Unequip the sword, fight unarmed. Confirm DMG drops to 2.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Combat reads from equipped inventory instance, not hardcoded values.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t19','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t19','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t19','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t19',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t20">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Status effects apply, tick, and expire</div>
+        <div class="test-steps">
+          <ol>
+            <li>Fight an enemy that applies a status on hit (e.g. poisoned).</li>
+            <li>Get hit. Confirm the status emoji appears in the HUD.</li>
+            <li>Advance cards. Confirm the status ticks (damage applied each card transition).</li>
+            <li>Advance until the status expires. Confirm "wore off" message appears.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Status shown in HUD. Damage/heal applies per tick. Expiry message shown. HUD clears.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t20','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t20','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t20','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t20',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t21">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Defeat → game over → save deleted</div>
+        <div class="test-steps">
+          <ol>
+            <li>Enter combat with 1 HP (use dev card to reduce HP). Let the enemy kill you.</li>
+            <li>Confirm the game over screen appears with the character's name.</li>
+            <li>Return to main menu. Confirm the character no longer appears in Select Character.</li>
+            <li>Confirm the <code>.dat</code> file is gone from disk.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Permadeath works. Save deleted. Character removed from roster.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t21','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t21','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t21','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t21',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 6 — HUD TABS                                   -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-6">
+    <div class="section-header">
+      <span class="section-num">VI</span>
+      <span class="section-title">HUD Tabs</span>
+      <span class="section-badge badge-hud">HUD</span>
+    </div>
+    <p class="section-desc">All six HUD tabs — Main, Stats, Items, Equipment, Quests, Notes, Memories.</p>
+
+    <div class="test-item" data-id="t22">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">All HUD tabs switch without ghosting</div>
+        <div class="test-steps">
+          <ol>
+            <li>Enter the story. Click each tab in order: Main → Stats → Items → Equipment → Quests → Notes → Memories.</li>
+            <li>Confirm each tab shows its correct content and the previous tab is hidden.</li>
+            <li>Rapidly click between tabs multiple times. Confirm no ghosting or overlap.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Only one tab visible at a time. No content overlap. No layout artifacts.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t22','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t22','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t22','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t22',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t23">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Equipment tab — expand slot shows lore and stats</div>
+        <div class="test-steps">
+          <ol>
+            <li>Equip a weapon and piece of armour.</li>
+            <li>Open Equipment tab. Click the weapon name to expand it.</li>
+            <li>Confirm the lore panel shows: DMG, +Hit (and Two-Handed if applicable), and lore text.</li>
+            <li>Click the armour name. Confirm AC and DR shown.</li>
+            <li>For a cross-book item, confirm <strong>from: BookName</strong> appears in the panel.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Expand/collapse toggles correctly. Stats and lore from inventory snapshot, not ITEM_LIBRARY.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t23','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t23','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t23','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t23',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t24">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Notes tab — text saves and persists</div>
+        <div class="test-steps">
+          <ol>
+            <li>Open the Notes tab. Type some text.</li>
+            <li>Click <strong>Save Notes</strong>. Confirm the button briefly shows ✓ Saved.</li>
+            <li>Navigate to another tab and back. Confirm text is still there.</li>
+            <li>Close and reopen the game. Confirm notes survived the session.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Notes persist to save file. Survive tab switches and full restarts.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t24','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t24','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t24','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t24',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t25">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Memories tab — shows story keywords and chronicle entries</div>
+        <div class="test-steps">
+          <ol>
+            <li>Ensure at least one story_keyword and one memory_keyword are set (from Section IV tests).</li>
+            <li>Open Memories tab. Confirm two sections: <strong>Learned</strong> and <strong>Chronicle</strong>.</li>
+            <li>Confirm Learned shows the story keyword formatted (underscores as spaces, capitalised).</li>
+            <li>Confirm Chronicle shows the memory key bold + description italic below it.</li>
+            <li>On a character with no memories yet, confirm the empty state message is shown.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Both sections render correctly. Empty state shown when nothing logged.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t25','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t25','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t25','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t25',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 7 — UI & SETTINGS                              -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-7">
+    <div class="section-header">
+      <span class="section-num">VII</span>
+      <span class="section-title">UI &amp; Settings</span>
+      <span class="section-badge badge-hud">HUD</span>
+    </div>
+    <p class="section-desc">Theme picker, audio sliders, text speed, pause menu, and Return to Story.</p>
+
+    <div class="test-item" data-id="t26">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Theme picker — tick marks update correctly</div>
+        <div class="test-steps">
+          <ol>
+            <li>Open Settings → UI Theme. Note which theme has a ✓.</li>
+            <li>Click a different theme. Confirm only the newly selected theme shows ✓.</li>
+            <li>Click through all 8 themes. Confirm each one correctly marks and unmarkes the others.</li>
+            <li>Restart the game. Confirm the selected theme persists.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Exactly one tick visible at all times. Theme persists to settings file. Bug B5 fixed.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t26','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t26','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t26','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t26',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t27">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Text speed slider — typewriter responds immediately</div>
+        <div class="test-steps">
+          <ol>
+            <li>In settings, drag text speed to minimum. Navigate to a new card. Confirm typewriter is very slow.</li>
+            <li>Set to maximum. Navigate to a new card. Confirm text appears almost instantly.</li>
+            <li>Set to a mid value. Confirm the chars/sec label updates live.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Typewriter speed reflects slider value. Label updates live. Value persists.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t27','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t27','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t27','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t27',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t28">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Pause menu → Settings → Return to Story</div>
+        <div class="test-steps">
+          <ol>
+            <li>While in the story, press the Menu button.</li>
+            <li>From pause menu, click Settings.</li>
+            <li>Confirm <strong>Return to Story</strong> button appears at the bottom.</li>
+            <li>Click it. Confirm you return to the exact card you left, with all state intact.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Return to Story visible in Settings when <code>_in_game</code> is true. Returns to correct card.</div>
+          <div class="test-note">Engine item E1 — partially implemented. Verify this works from Settings AND the Library screen.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t28','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t28','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t28','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t28',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 8 — AUTHOR COMPANION                           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-8">
+    <div class="section-header">
+      <span class="section-num">VIII</span>
+      <span class="section-title">Author Companion</span>
+      <span class="section-badge badge-author">Author</span>
+    </div>
+    <p class="section-desc">Card editor, Library (items/feats/bgs), new effect types, and the Audit tool.</p>
+
+    <div class="test-item" data-id="t29">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Open book folder — all cards load in directory</div>
+        <div class="test-steps">
+          <ol>
+            <li>Launch the Author Companion. Click <strong>Open</strong> and select the WakingRoad_v2 folder.</li>
+            <li>Confirm all cards appear in the left directory panel.</li>
+            <li>Confirm <code>start_card</code> appears first, highlighted in gold.</li>
+            <li>Click a card. Confirm all fields populate correctly (prose, media, links, effects).</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>All cards load. start_card highlighted. Selected card populates all fields.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t29','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t29','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t29','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t29',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t30">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Library → Items load from items.json (Bug B1 fix)</div>
+        <div class="test-steps">
+          <ol>
+            <li>Open the Library tab → Items sub-tab.</li>
+            <li>Click <strong>Load</strong>. Confirm items from <code>items.json</code> populate the rows.</li>
+            <li>Verify each row shows id, label, emoji, type, buy/sell prices, slot, and stats correctly.</li>
+            <li>Repeat for Feats and Backgrounds sub-tabs.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Items, feats, and backgrounds all load. Previously broken — this was the critical B1 fix.</div>
+          <div class="test-note">This was the most critical bug — all three lib load functions had the same one-liner return bug.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t30','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t30','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t30','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t30',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t31">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">New effect types in dropdowns — give_item, set_story_kw, set_memory_kw</div>
+        <div class="test-steps">
+          <ol>
+            <li>Select any card. On the Effects tab, open the effect type dropdown for a choice.</li>
+            <li>Confirm these new types appear: <code>give_item</code>, <code>remove_item</code>, <code>set_story_kw</code>, <code>clear_story_kw</code>, <code>set_memory_kw</code>, <code>clear_memory_kw</code>.</li>
+            <li>Select <code>give_item</code>. Enter <code>wolf_pelt</code> in the key field and <code>3</code> in the value field.</li>
+            <li>Save the card. Open the JSON file. Confirm <code>"give_item": {"id": "wolf_pelt", "qty": 3}</code> is written correctly.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>All new effect types present. give_item serialises as dict when qty != 1, plain string when qty = 1.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t31','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t31','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t31','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t31',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t32">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Delete card — file removed from disk (Bug B2 fix)</div>
+        <div class="test-steps">
+          <ol>
+            <li>Create a new card. Save it. Confirm the JSON file exists on disk.</li>
+            <li>Select the card. Click <strong>Delete</strong>.</li>
+            <li>Confirm the card disappears from the directory list.</li>
+            <li>Check the book folder on disk. Confirm the JSON file is actually gone.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Card removed from list AND from disk. Previously the file remained on disk — B2 fix.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t32','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t32','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t32','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t32',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t33">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Project Audit — broken links and orphaned cards detected</div>
+        <div class="test-steps">
+          <ol>
+            <li>Open the Library → Audit tab. Click <strong>Run Audit</strong>.</li>
+            <li>Confirm the summary shows total card count and start_card status.</li>
+            <li>Confirm broken links section lists any targets that don't exist.</li>
+            <li>Confirm orphaned cards section lists any cards not reachable from start_card.</li>
+            <li>Deliberately add a broken link on a card and re-run. Confirm it's caught.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Audit accurately reports broken links and orphaned cards. No false positives.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t33','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t33','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t33','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t33',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 9 — CROSS-BOOK PORTABILITY                     -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-9">
+    <div class="section-header">
+      <span class="section-num">IX</span>
+      <span class="section-title">Cross-Book Portability</span>
+      <span class="section-badge badge-cross">Cross-Book</span>
+    </div>
+    <p class="section-desc">Items, memories, and story keywords travelling between books. The core promise of the engine.</p>
+
+    <div class="test-item" data-id="t34">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Item from Book A displays correctly in Book B</div>
+        <div class="test-steps">
+          <ol>
+            <li>In Book A, acquire an item defined in Book A's <code>items.json</code> only.</li>
+            <li>Travel to Book B (which does not define this item). Open the Items HUD tab.</li>
+            <li>Confirm the item still displays with its full label, emoji, stats, lore, and sell price.</li>
+            <li>Confirm <strong>from: BookA</strong> appears on the item entry.</li>
+            <li>Equip it if applicable. Confirm combat stats reflect it correctly.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Item fully displayed from character snapshot. No "unknown item" fallbacks. Source book shown.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t34','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t34','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t34','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t34',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t35">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">Same item id in two books — instances stay separate</div>
+        <div class="test-steps">
+          <ol>
+            <li>Define <code>rusty_knife</code> in Book A (DMG 2) and Book B (DMG 4) with different stats.</li>
+            <li>Acquire the knife in Book A. Travel to Book B. Acquire the knife there too.</li>
+            <li>Open Items tab. Confirm two separate <code>rusty_knife</code> entries.</li>
+            <li>Confirm each shows its own stats (DMG 2 and DMG 4 respectively).</li>
+            <li>Confirm the Book A knife still shows DMG 2 — Book B's definition did not overwrite it.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Two separate instances with independent stats. Snapshot wins over ITEM_LIBRARY. This is the core portability guarantee.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t35','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t35','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t35','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t35',this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="test-item" data-id="t36">
+      <div class="test-check"></div>
+      <div class="test-body">
+        <div class="test-title">story_keywords and memories visible after cross-book travel</div>
+        <div class="test-steps">
+          <ol>
+            <li>In Book A, set a story_keyword and a memory_keyword.</li>
+            <li>Travel to Book B. Open the Memories tab.</li>
+            <li>Confirm both are still present, correctly formatted.</li>
+            <li>Start a New Run of Book B. Confirm story and memory keywords still intact.</li>
+          </ol>
+          <div class="test-expect"><strong>Expected</strong>Cross-book memories and story keywords survive travel and New Run. Character carries their history.</div>
+        </div>
+        <div class="test-controls">
+          <button class="btn btn-pass" onclick="mark('t36','pass')">✓ Pass</button>
+          <button class="btn btn-fail" onclick="mark('t36','fail')">✗ Fail</button>
+          <button class="btn btn-skip" onclick="mark('t36','skip')">— Skip</button>
+        </div>
+        <textarea class="notes-field" placeholder="Describe what went wrong..." oninput="saveNote('t36',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SUMMARY                                                 -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="summary">
+    <h2>Playtest Summary</h2>
+    <div class="summary-grid">
+      <div class="summary-cell"><span class="summary-num num-total" id="s-total">36</span><span class="summary-lbl">Total Tests</span></div>
+      <div class="summary-cell"><span class="summary-num num-pass" id="s-pass">0</span><span class="summary-lbl">Passed</span></div>
+      <div class="summary-cell"><span class="summary-num num-fail" id="s-fail">0</span><span class="summary-lbl">Failed</span></div>
+      <div class="summary-cell"><span class="summary-num num-skip" id="s-skip">0</span><span class="summary-lbl">Skipped</span></div>
+    </div>
+    <button class="export-btn" onclick="exportResults()">Export Results as Text</button>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL = 36;
+  const results = JSON.parse(localStorage.getItem('lg_playtest') || '{}');
+  const notes   = JSON.parse(localStorage.getItem('lg_notes')    || '{}');
+
+  function save() {
+    localStorage.setItem('lg_playtest', JSON.stringify(results));
+    localStorage.setItem('lg_notes',    JSON.stringify(notes));
+  }
+
+  function mark(id, state) {
+    results[id] = state;
+    save();
+    const el = document.querySelector(`[data-id="${id}"]`);
+    el.classList.remove('pass','fail','skip');
+    el.classList.add(state);
+    const chk = el.querySelector('.test-check');
+    chk.textContent = state === 'pass' ? '✓' : state === 'fail' ? '✗' : '—';
+    if (state !== 'pass') el.classList.add('expanded');
+    updateCounts();
+  }
+
+  function saveNote(id, val) {
+    notes[id] = val;
+    save();
+  }
+
+  function updateCounts() {
+    const vals = Object.values(results);
+    const pass = vals.filter(v => v === 'pass').length;
+    const fail = vals.filter(v => v === 'fail').length;
+    const skip = vals.filter(v => v === 'skip').length;
+    const done = pass + fail + skip;
+    document.getElementById('s-pass').textContent = pass;
+    document.getElementById('s-fail').textContent = fail;
+    document.getElementById('s-skip').textContent = skip;
+    const pct = Math.round((done / TOTAL) * 100);
+    document.getElementById('prog-bar').style.width = pct + '%';
+    document.getElementById('prog-count').textContent = done + ' / ' + TOTAL;
+  }
+
+  // Toggle expand on click
+  document.querySelectorAll('.test-item').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA') return;
+      el.classList.toggle('expanded');
+    });
+  });
+
+  // Restore state
+  document.querySelectorAll('.test-item').forEach(el => {
+    const id = el.dataset.id;
+    const state = results[id];
+    if (state) {
+      el.classList.add(state);
+      const chk = el.querySelector('.test-check');
+      chk.textContent = state === 'pass' ? '✓' : state === 'fail' ? '✗' : '—';
+      if (state === 'fail') el.classList.add('expanded');
+    }
+    const n = notes[id];
+    if (n) {
+      const ta = el.querySelector('.notes-field');
+      if (ta) ta.value = n;
+    }
+  });
+  updateCounts();
+
+  function exportResults() {
+    const lines = ['LOREGLASS PLAYTEST RESULTS — v0.95.8', '='.repeat(50), ''];
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(sec => {
+      const title = sec.querySelector('.section-title').textContent;
+      lines.push('── ' + title.toUpperCase() + ' ──');
+      sec.querySelectorAll('.test-item').forEach(el => {
+        const id    = el.dataset.id;
+        const title2 = el.querySelector('.test-title').textContent;
+        const state = results[id] || 'untested';
+        const sym   = state === 'pass' ? '✓' : state === 'fail' ? '✗' : state === 'skip' ? '—' : '?';
+        lines.push(`  ${sym} [${state.toUpperCase()}] ${title2}`);
+        if (notes[id]) lines.push(`      NOTE: ${notes[id]}`);
+      });
+      lines.push('');
+    });
+    const vals = Object.values(results);
+    lines.push('='.repeat(50));
+    lines.push(`PASS: ${vals.filter(v=>v==='pass').length}  FAIL: ${vals.filter(v=>v==='fail').length}  SKIP: ${vals.filter(v=>v==='skip').length}  TOTAL: ${TOTAL}`);
+    const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'LoreGlass_Playtest_Results.txt';
+    a.click();
+  }
+</script>
+</body>
+</html>
