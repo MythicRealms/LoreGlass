@@ -1,0 +1,17 @@
+{
+	"version": 1,
+	"books": [
+		{
+			"id": "TheWakingRoad",
+			"title": "The Waking Road",
+			"author": "Grey Hammond",
+			"description": "The first official LoreGlass adventure. A traveler arrives in a crossroads town with no memory of how they got there. The road ahead branches in every direction.",
+			"version": "1.0",
+			"tags": ["official", "fantasy"],
+			"zip_url": "https://raw.githubusercontent.com/MythicRealms/LoreGlass/main/books/TheWakingRoad.zip",
+			"cover_url": "",
+			"size_kb": 64,
+			"lethality": "standard"
+		}
+	]
+}
