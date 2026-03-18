@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoreGlass: A Persistent Narrative Engine</title>
+<meta name="title" content="LoreGlass: A Persistent Narrative Engine">
+<meta name="description" content="A narrative RPG engine where every choice writes your character's life. Authors build worlds. Players build legends.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mythicrealms.github.io/LoreGlass/">
+<meta property="og:title" content="LoreGlass: A Persistent Narrative Engine">
+<meta property="og:description" content="Authors aren't just writing stories. They are writing a character's life. Every book is a door, not a vacuum.">
+<meta property="og:image" content="https://raw.githubusercontent.com/MythicRealms/LoreGlass/refs/heads/main/loreglassicon.png">
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://mythicrealms.github.io/LoreGlass/">
+<meta property="twitter:title" content="LoreGlass: A Persistent Narrative Engine">
+<meta property="twitter:description" content="A modular RPG engine where choices leave a mark. Build your character across authored worlds.">
+<meta property="twitter:image" content="https://raw.githubusercontent.com/MythicRealms/LoreGlass/refs/heads/main/loreglassicon.png">
+<meta name="theme-color" content="#c8922a">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0a0806;--ink-mid:#130f09;--parchment:#f0e6d0;--parchment-dim:#d4c8b0;
+  --parchment-fog:#9a9080;--gold:#c8922a;--gold-light:#e8b84a;--gold-pale:#f2dea0;
+  --gold-deep:#8a6018;--ember:#c83818;--ash:#5a5248;
+  --rule:rgba(200,146,42,0.18);--rule-bright:rgba(200,146,42,0.45);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--parchment);font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;line-height:1.7;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.35;mix-blend-mode:overlay;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 3rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid transparent;transition:all 0.4s ease;}
+nav.scrolled{background:rgba(10,8,6,0.94);backdrop-filter:blur(14px);border-bottom-color:var(--rule);}
+.nav-logo{font-family:'Cinzel Decorative',serif;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.05em;}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center;}
+.nav-links a{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--parchment-fog);text-decoration:none;transition:color 0.2s;}
+.nav-links a:hover{color:var(--gold-light);}
+.nav-itch{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;border:1px solid var(--rule-bright);font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;color:var(--gold-light);text-decoration:none;text-transform:uppercase;transition:all 0.2s;border-radius:1px;}
+.nav-itch:hover{background:rgba(200,146,42,0.08);color:var(--gold-pale);}
+
+/* HERO */
+.hero{min-height:100vh;display:grid;place-items:center;position:relative;overflow:hidden;padding:8rem 2rem 6rem;}
+.hero-atmosphere{position:absolute;inset:0;background:radial-gradient(ellipse 90% 70% at 50% 20%,rgba(200,146,42,0.07) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 15% 85%,rgba(200,56,24,0.05) 0%,transparent 55%),radial-gradient(ellipse 60% 50% at 85% 15%,rgba(200,146,42,0.04) 0%,transparent 55%),linear-gradient(175deg,#0a0806 0%,#150f08 50%,#0a0806 100%);}
+.embers{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.ember{position:absolute;border-radius:50%;opacity:0;animation:rise var(--t) var(--d) infinite ease-in-out;}
+@keyframes rise{0%{opacity:0;transform:translateY(0) translateX(0) scale(1);}15%{opacity:var(--op);}85%{opacity:var(--op);}100%{opacity:0;transform:translateY(calc(-1 * var(--h))) translateX(var(--x)) scale(0.3);}}
+.ghost-book{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);width:min(800px,95vw);opacity:0.055;pointer-events:none;}
+.hero-content{position:relative;z-index:10;text-align:center;max-width:860px;}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.55em;color:var(--gold);text-transform:uppercase;margin-bottom:1.8rem;opacity:0;animation:ascend 0.9s 0.15s forwards cubic-bezier(0.22,1,0.36,1);}
+h1.wordmark{font-family:'Cinzel Decorative',serif;font-size:clamp(4rem,12vw,9.5rem);font-weight:900;line-height:0.88;letter-spacing:-0.025em;background:linear-gradient(150deg,var(--gold-pale) 0%,var(--gold) 35%,var(--gold-pale) 55%,var(--gold-light) 80%,var(--gold-pale) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;filter:drop-shadow(0 0 80px rgba(200,146,42,0.25));opacity:0;animation:ascend 1.1s 0.35s forwards cubic-bezier(0.22,1,0.36,1),shimmerFlow 8s 1.5s infinite ease-in-out;}
+@keyframes shimmerFlow{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+.hero-tagline{font-size:clamp(1.25rem,3vw,1.9rem);font-style:italic;font-weight:300;color:var(--parchment-dim);margin:2rem 0 1rem;line-height:1.5;opacity:0;animation:ascend 0.9s 0.65s forwards cubic-bezier(0.22,1,0.36,1);}
+.hero-sub{font-size:1.05rem;color:var(--parchment-fog);max-width:580px;margin:0 auto 2rem;opacity:0;animation:ascend 0.9s 0.8s forwards cubic-bezier(0.22,1,0.36,1);}
+.lethality-notice{max-width:520px;margin:0 auto 2.5rem;padding:1rem 1.4rem;border-left:2px solid var(--ember);background:rgba(200,56,24,0.06);text-align:left;opacity:0;animation:ascend 0.9s 0.9s forwards cubic-bezier(0.22,1,0.36,1);}
+.lethality-notice strong{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--ember);display:block;margin-bottom:0.4rem;}
+.lethality-notice p{font-size:0.92rem;color:var(--parchment-fog);font-style:italic;line-height:1.6;}
+.badge-row{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-bottom:2rem;opacity:0;animation:ascend 0.9s 1.0s forwards cubic-bezier(0.22,1,0.36,1);}
+.badge{display:inline-flex;align-items:center;gap:0.5rem;border:1px solid var(--rule-bright);padding:0.5rem 1.4rem;font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold-light);border-radius:1px;}
+.badge.ember-badge{border-color:rgba(200,56,24,0.5);color:#e86848;}
+.hero-cta{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-bottom:2rem;opacity:0;animation:ascend 0.9s 1.1s forwards cubic-bezier(0.22,1,0.36,1);}
+.cta-primary{display:inline-flex;align-items:center;gap:0.6rem;padding:0.8rem 2rem;background:var(--gold-deep);border:1px solid var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold-pale);text-decoration:none;transition:all 0.3s;border-radius:1px;}
+.cta-primary:hover{background:var(--gold);color:var(--ink);}
+.cta-secondary{display:inline-flex;align-items:center;gap:0.6rem;padding:0.8rem 1.6rem;border:1px solid var(--rule-bright);font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--parchment-fog);text-decoration:none;transition:all 0.3s;border-radius:1px;}
+.cta-secondary:hover{border-color:var(--gold);color:var(--gold-light);}
+.platforms-row{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;opacity:0;animation:ascend 0.9s 1.2s forwards cubic-bezier(0.22,1,0.36,1);}
+.platform{display:flex;align-items:center;gap:0.55rem;padding:0.45rem 1.1rem;border:1px solid rgba(200,146,42,0.15);font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--ash);text-transform:uppercase;transition:all 0.3s;border-radius:1px;}
+.platform:hover{border-color:var(--rule-bright);color:var(--gold-light);}
+@keyframes ascend{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* ORNAMENT */
+.ornament{display:flex;align-items:center;gap:1.2rem;max-width:900px;margin:0 auto;padding:0 3rem;}
+.orn-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.orn-diamond{width:7px;height:7px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 12px rgba(200,146,42,0.7);}
+.orn-text{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:0.5em;color:var(--gold-deep);text-transform:uppercase;}
+
+/* SECTIONS */
+section{padding:6rem 3rem;}
+.section-inner{max-width:1120px;margin:0 auto;}
+.s-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.55em;color:var(--gold);text-transform:uppercase;margin-bottom:0.8rem;}
+.s-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.7rem,4vw,2.8rem);font-weight:700;color:var(--parchment);line-height:1.2;margin-bottom:1.5rem;}
+.s-lead{font-size:1.15rem;line-height:1.85;color:var(--parchment-fog);max-width:700px;font-weight:300;}
+
+/* GOLDEN RULE */
+.golden-rule{margin-top:3rem;padding:2.5rem 3rem;border:1px solid var(--rule-bright);background:rgba(200,146,42,0.03);position:relative;}
+.golden-rule::before{content:'✦';position:absolute;top:-0.7rem;left:50%;transform:translateX(-50%);background:var(--ink);padding:0 1rem;color:var(--gold);font-size:0.8rem;}
+.golden-rule-label{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.4em;color:var(--gold-deep);text-transform:uppercase;margin-bottom:0.8rem;}
+.golden-rule-text{font-size:clamp(1.2rem,2.5vw,1.7rem);font-style:italic;font-weight:300;color:var(--parchment-dim);line-height:1.5;}
+
+/* PLAYERS */
+.for-players{background:linear-gradient(180deg,var(--ink) 0%,var(--ink-mid) 100%);}
+.player-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;margin-top:3.5rem;border:1px solid var(--rule);border-radius:2px;overflow:hidden;background:var(--rule);}
+.player-card{background:var(--ink);padding:2.2rem 2rem;transition:background 0.3s;}
+.player-card:hover{background:rgba(200,146,42,0.025);}
+.card-icon{font-size:1.6rem;margin-bottom:1rem;display:block;}
+.card-title{font-family:'Cinzel Decorative',serif;font-size:0.85rem;font-weight:700;color:var(--gold-light);margin-bottom:0.8rem;letter-spacing:0.04em;line-height:1.4;}
+.card-body{font-size:1rem;line-height:1.75;color:var(--ash);font-weight:300;}
+
+/* MEMORY BOX */
+.memory-box{margin-top:4rem;display:grid;grid-template-columns:1fr 2fr;gap:3rem;align-items:start;padding:2.5rem;border:1px dashed var(--rule-bright);background:rgba(200,146,42,0.02);}
+@media(max-width:768px){.memory-box{grid-template-columns:1fr;gap:1.5rem;}}
+.memory-label{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.35em;color:var(--gold-deep);text-transform:uppercase;margin-bottom:0.6rem;}
+.memory-heading{font-family:'Cinzel Decorative',serif;font-size:1rem;color:var(--gold-light);margin-bottom:0.8rem;}
+.memory-body{font-size:0.95rem;color:var(--parchment-dim);line-height:1.7;}
+.memory-example{border-left:2px solid var(--rule-bright);padding-left:1.5rem;}
+.branch{margin-bottom:0.9rem;font-size:0.95rem;line-height:1.6;color:var(--ash);}
+.branch-label{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--ash);display:block;margin-bottom:0.2rem;}
+.branch.unlocked{color:var(--parchment-dim);}
+.branch.unlocked .branch-label{color:var(--gold-deep);}
+
+/* AUTHORS */
+.for-authors{background:var(--ink-mid);position:relative;}
+.for-authors::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(200,146,42,0.035) 0%,transparent 70%);pointer-events:none;}
+.author-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:3.5rem;border:1px solid var(--rule);border-radius:2px;overflow:hidden;}
+@media(max-width:640px){.author-grid{grid-template-columns:1fr;}}
+.author-item{padding:2rem 2.4rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);transition:background 0.3s;}
+.author-item:hover{background:rgba(200,146,42,0.03);}
+.author-item:nth-child(even){border-right:none;}
+.author-item:nth-last-child(-n+2){border-bottom:none;}
+@media(max-width:640px){.author-item{border-right:none;}.author-item:last-child{border-bottom:none;}}
+.item-num{font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--gold-deep);letter-spacing:0.3em;margin-bottom:0.5rem;}
+.item-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--parchment);margin-bottom:0.6rem;}
+.item-desc{font-size:0.95rem;line-height:1.7;color:var(--ash);font-weight:300;}
+
+/* VIDEO */
+.video-wrap{max-width:860px;margin:4rem auto 0;border:1px solid var(--rule-bright);background:rgba(200,146,42,0.03);box-shadow:0 24px 60px rgba(0,0,0,0.5);}
+.video-ratio{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;}
+.video-ratio iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
+.video-cap{font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--gold-deep);text-transform:uppercase;letter-spacing:0.25em;padding:1rem;text-align:center;}
+
+/* MECHANICS */
+.mechanics{background:var(--ink);padding:5rem 3rem;}
+.mechanics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;margin-top:3rem;background:var(--rule);border:1px solid var(--rule);border-radius:2px;overflow:hidden;}
+.mech-cell{background:var(--ink);padding:1.8rem 1.5rem;text-align:center;transition:background 0.3s;}
+.mech-cell:hover{background:rgba(200,146,42,0.03);}
+.mech-icon{font-size:1.8rem;margin-bottom:0.8rem;display:block;}
+.mech-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:0.4rem;}
+.mech-desc{font-size:0.9rem;color:var(--ash);line-height:1.5;}
+
+/* ROADMAP */
+.roadmap{background:var(--ink-mid);}
+.road-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;margin-top:3rem;background:var(--rule);border:1px solid var(--rule);border-radius:2px;overflow:hidden;}
+.road-item{background:var(--ink-mid);padding:2rem;transition:background 0.3s;}
+.road-item:hover{background:rgba(200,146,42,0.03);}
+.road-tag{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:0.6rem;}
+.road-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--parchment);margin-bottom:0.6rem;}
+.road-desc{font-size:0.92rem;color:var(--ash);line-height:1.65;}
+
+/* CHANGELOG */
+.changelog{background:linear-gradient(180deg,var(--ink-mid) 0%,var(--ink) 100%);}
+.timeline{margin-top:3.5rem;position:relative;padding-left:2.5rem;}
+.timeline::before{content:'';position:absolute;left:0;top:0.6rem;bottom:0;width:1px;background:linear-gradient(180deg,var(--gold) 0%,rgba(200,146,42,0.4) 60%,transparent 100%);}
+.v-block{margin-bottom:2.8rem;position:relative;opacity:0;transform:translateX(-10px);transition:opacity 0.5s ease,transform 0.5s ease;}
+.v-block.visible{opacity:1;transform:translateX(0);}
+.v-block::before{content:'';position:absolute;left:-2.7rem;top:0.45rem;width:7px;height:7px;background:var(--gold-deep);border:1px solid var(--gold);border-radius:50%;}
+.v-block.current::before{background:var(--ember);border-color:var(--ember);box-shadow:0 0 14px rgba(200,56,24,0.6);width:9px;height:9px;left:-2.8rem;top:0.35rem;}
+.v-tag{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--gold-deep);letter-spacing:0.2em;margin-bottom:0.3rem;}
+.v-block.current .v-tag{color:var(--ember);}
+.v-title{font-family:'Cinzel Decorative',serif;font-size:0.95rem;color:var(--parchment);margin-bottom:0.6rem;letter-spacing:0.02em;}
+.v-notes{list-style:none;font-size:0.95rem;color:var(--ash);line-height:1.75;}
+.v-notes li{padding-left:1.2rem;position:relative;margin-bottom:0.15rem;}
+.v-notes li::before{content:'—';position:absolute;left:0;color:rgba(200,146,42,0.3);font-family:'JetBrains Mono',monospace;}
+
+/* CONTACT */
+.contact{background:var(--ink);text-align:center;}
+.contact-grid{display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;margin-top:3rem;}
+.contact-card{display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1.8rem 2.5rem;border:1px solid var(--rule);border-radius:2px;text-decoration:none;transition:all 0.3s;min-width:190px;}
+.contact-card:hover{border-color:var(--rule-bright);background:rgba(200,146,42,0.04);}
+.contact-icon{font-size:1.8rem;}
+.contact-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold-deep);}
+.contact-value{font-size:0.95rem;color:var(--parchment-fog);}
+
+/* CLOSING */
+.closing{text-align:center;padding:8rem 3rem;background:linear-gradient(180deg,var(--ink) 0%,#050402 100%);}
+.closing-kicker{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.45em;color:var(--gold);text-transform:uppercase;margin-bottom:2.5rem;}
+.closing-quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:300;color:var(--parchment-dim);max-width:640px;margin:0 auto 1.5rem;line-height:1.55;}
+.closing-attr{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--ash);letter-spacing:0.3em;}
+
+footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-credit{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:rgba(90,82,72,0.7);letter-spacing:0.2em;}
+.footer-credit span{color:var(--gold-deep);}
+.footer-links{display:flex;gap:2rem;}
+.footer-links a{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;color:rgba(90,82,72,0.5);text-decoration:none;text-transform:uppercase;transition:color 0.2s;}
+.footer-links a:hover{color:var(--gold);}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem;}.nav-links{display:none;}
+  section{padding:4rem 1.5rem;}
+  footer{padding:1.5rem;flex-direction:column;align-items:center;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-logo">LoreGlass</div>
+  <ul class="nav-links">
+    <li><a href="#players">For Players</a></li>
+    <li><a href="#authors">For Authors</a></li>
+    <li><a href="#mechanics">Mechanics</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#chronicle">Chronicle</a></li>
+    <li><a href="https://loreglass.itch.io/loreglass" target="_blank" class="nav-itch">▶ Play on itch.io</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-atmosphere"></div>
+  <div class="embers" id="embers"></div>
+  <div class="ghost-book">
+    <svg viewBox="0 0 800 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M400 440 C230 415 80 365 55 80 L400 35 L745 80 C720 365 570 415 400 440Z" stroke="#c8922a" stroke-width="0.8" fill="none"/>
+      <line x1="400" y1="35" x2="400" y2="440" stroke="#c8922a" stroke-width="1.2"/>
+      <path d="M105 130 Q250 112 400 120" stroke="#c8922a" stroke-width="0.4" opacity="0.5"/>
+      <path d="M100 165 Q250 150 400 156" stroke="#c8922a" stroke-width="0.4" opacity="0.42"/>
+      <path d="M100 200 Q250 188 400 192" stroke="#c8922a" stroke-width="0.4" opacity="0.34"/>
+      <path d="M102 235 Q252 225 400 229" stroke="#c8922a" stroke-width="0.4" opacity="0.26"/>
+      <path d="M695 130 Q550 112 400 120" stroke="#c8922a" stroke-width="0.4" opacity="0.5"/>
+      <path d="M700 165 Q550 150 400 156" stroke="#c8922a" stroke-width="0.4" opacity="0.42"/>
+      <path d="M700 200 Q550 188 400 192" stroke="#c8922a" stroke-width="0.4" opacity="0.34"/>
+      <path d="M698 235 Q548 225 400 229" stroke="#c8922a" stroke-width="0.4" opacity="0.26"/>
+      <circle cx="400" cy="35" r="4" fill="#c8922a" opacity="0.5"/>
+      <circle cx="400" cy="440" r="3" fill="#c8922a" opacity="0.3"/>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <p class="eyebrow">A window into living prose</p>
+    <h1 class="wordmark">LoreGlass</h1>
+    <p class="hero-tagline">Every book is a door. Every choice writes a life.</p>
+    <p class="hero-sub">A persistent narrative RPG engine where characters travel between authored worlds, carrying everything they've earned, and everything they've lost.</p>
+
+    <div class="lethality-notice">
+      <strong>⚠ A note to travelers</strong>
+      <p>Some doors lead to death. Your character is a cumulative record of every world they have walked. If they fall, that record is erased. Authors are obligated to mark high-lethality books. Choose your doors wisely.</p>
+    </div>
+
+    <div class="badge-row">
+      <div class="badge">✦ v0.995 / Approaching 1.0</div>
+      <div class="badge ember-badge">Active Development</div>
+    </div>
+
+    <div class="hero-cta">
+      <a href="https://loreglass.itch.io/loreglass" target="_blank" class="cta-primary">▶ &nbsp;Play on itch.io</a>
+      <a href="https://www.youtube.com/@LoreGlass" target="_blank" class="cta-secondary">▷ &nbsp;Watch on YouTube</a>
+    </div>
+
+    <div class="platforms-row">
+      <div class="platform"><span>🖥</span> PC / Mac</div>
+      <div class="platform"><span>📱</span> Android</div>
+      <div class="platform"><span>🌐</span> HTML5 / Web</div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">The Golden Rule</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
+<section style="padding:4rem 3rem;background:var(--ink);">
+  <div class="section-inner">
+    <div class="golden-rule reveal">
+      <div class="golden-rule-label">Core Vision</div>
+      <div class="golden-rule-text">"Authors aren't just writing stories. They are writing a character's life."</div>
+    </div>
+    <p style="margin-top:2rem;font-size:1.1rem;line-height:1.85;color:var(--parchment-fog);max-width:720px;font-weight:300;" class="reveal">LoreGlass is a persistent narrative ecosystem. Every book is a door, not a vacuum. The engine is neutral. It does not enforce fairness. It is the author's moral obligation to balance challenge, label lethality, and respect the player's investment. The UI is a literal lens: a piece of glass through which you experience a database of living history.</p>
+  </div>
+</section>
+
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">For Players</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
+<section class="for-players" id="players">
+  <div class="section-inner">
+    <p class="s-label reveal">For Players</p>
+    <h2 class="s-title reveal">Your story. Your character. Your history.</h2>
+    <p class="s-lead reveal">LoreGlass plays like a living book. Each adventure is an authored world you enter through the engine's lens: prose, choices, and consequences. A full RPG system runs silently underneath. Your character is not a save file. They are a record.</p>
+    <div class="player-grid">
+      <div class="player-card">
+        <span class="card-icon">📚</span>
+        <div class="card-title">The Library Hub</div>
+        <div class="card-body">The central nexus where characters are born and return. A safe space between worlds, and a potential gameplay space in its own right. Every door in the Library is a book an author has built for you to enter.</div>
+      </div>
+      <div class="player-card">
+        <span class="card-icon">⚔</span>
+        <div class="card-title">A Real RPG System</div>
+        <div class="card-body">Six core stats. Seven equipment slots. Feats, backgrounds, scrolls, and a tactical combat engine with initiative and status effects. Your build matters from the first character screen through every world you enter.</div>
+      </div>
+      <div class="player-card">
+        <span class="card-icon">📦</span>
+        <div class="card-title">Inventory That Travels</div>
+        <div class="card-body">Every item is a unique instance, snapshotted at acquisition. Carry a weapon earned in one world into another. Its stats, lore, and history travel with it regardless of whether the new book has ever heard of it.</div>
+      </div>
+      <div class="player-card">
+        <span class="card-icon">🧠</span>
+        <div class="card-title">The Rereading Mechanic</div>
+        <div class="card-body">Memory keywords persist across runs. If your character has been here before, they remember. The story changes. Authors use this to unlock paths only veterans can access: skip the search, rally the village, take the door you earned last time.</div>
+      </div>
+      <div class="player-card">
+        <span class="card-icon">🎲</span>
+        <div class="card-title">Dice With Real Stakes</div>
+        <div class="card-body">Stat checks with actual consequences. Roll 1d10 + your stat against a difficulty. The engine does not soften failure. Both outcomes branch the story forward. Some failures are permanent. Some doors don't reopen.</div>
+      </div>
+      <div class="player-card">
+        <span class="card-icon">🌐</span>
+        <div class="card-title">Cross-Book Travel</div>
+        <div class="card-body">Your character is not bound to one story. Travel between books carrying inventory, feats, memories, and persistent flags. Authors can link their worlds together, or send you back to the Library to choose your next door.</div>
+      </div>
+    </div>
+
+    <div class="memory-box reveal">
+      <div>
+        <div class="memory-label">Memory System</div>
+        <div class="memory-heading">The Rereading Mechanic</div>
+        <div class="memory-body">Memory keywords are permanent chronicle entries. They survive New Runs, book exits, and character loading. Authors use them to detect returning players and unlock branches that only someone who has already lived through an event could access.</div>
+      </div>
+      <div class="memory-example">
+        <div class="v-tag" style="margin-bottom:0.8rem;">Example: Memory / ChildFound</div>
+        <div class="branch">
+          <span class="branch-label">First Visit</span>
+          "Search the surrounding area for the missing child. You have no leads."
+        </div>
+        <div class="branch unlocked">
+          <span class="branch-label">Memory Unlocked / Returning Traveler</span>
+          "I know where they take them. Rally the others. We move before dawn."
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">For Authors</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
+<section class="for-authors" id="authors">
+  <div class="section-inner">
+    <p class="s-label reveal">For Authors</p>
+    <h2 class="s-title reveal">Write worlds. Not code.</h2>
+    <p class="s-lead reveal">The engine is a database reader. Content is separated from the machine. LoreGlass ships with a full companion authoring tool. Every card, quest, item, and enemy is defined in plain JSON, but never by hand. Built for mental flow: fast context-switching, live audit, zero dead ends.</p>
+    <div class="author-grid">
+      <div class="author-item reveal">
+        <div class="item-num">01</div>
+        <div class="item-title">Context-Switching Canvas</div>
+        <div class="item-desc">Six tabs per card: Canvas, Choices, Conditions, Effects, Encounter, Library. Auto-saves on card switch. Jump to any linked card with one click. The Recent tab tracks your last 20 cards so you never lose your thread in a complex decision tree.</div>
+      </div>
+      <div class="author-item reveal">
+        <div class="item-num">02</div>
+        <div class="item-title">Full Item, Race & Background Libraries</div>
+        <div class="item-desc">Define weapons, armour, scrolls, and consumables in a structured editor. Type-driven UI shows only relevant fields. Define your world's races with per-stat spinboxes. Override engine defaults or add entirely new races to character creation.</div>
+      </div>
+      <div class="author-item reveal">
+        <div class="item-num">03</div>
+        <div class="item-title">16 Conditions, 26 Effects</div>
+        <div class="item-desc">Every choice checks conditions (keyword, stat, quest state, inventory, story memory) and fires effects that reshape the world. give_item, set_memory_kw, teach_feat, apply_status, and more. Complex branching with zero scripting required.</div>
+      </div>
+      <div class="author-item reveal">
+        <div class="item-num">04</div>
+        <div class="item-title">Combat, Merchants & Bounties</div>
+        <div class="item-desc">Any card triggers full multi-round combat with named enemies and status-on-hit effects. Merchant cards get structured buy/sell row editors. Bounty boards pull from fixed quest rows or generated daily jobs. The engine handles all dice math.</div>
+      </div>
+      <div class="author-item reveal">
+        <div class="item-num">05</div>
+        <div class="item-title">Lethality Transparency</div>
+        <div class="item-desc">Authors have a moral obligation to the player's time. If a book is a "Character Killer," label it as such. The engine provides permadeath and resurrection tokens. How you use them defines your book's contract with the player.</div>
+      </div>
+      <div class="author-item reveal">
+        <div class="item-num">06</div>
+        <div class="item-title">Project Audit</div>
+        <div class="item-desc">Scan the entire book for broken links, orphaned cards, keywords set but never read, or read but never set. Covers all 16 condition types, all effect types, and item gives. Ship clean stories with confidence. No broken doors.</div>
+      </div>
+      <div class="author-item reveal">
+        <div class="item-num">07</div>
+        <div class="item-title">Cross-Book & Library Links</div>
+        <div class="item-desc">Any choice can travel to another book, return via _prev_book, or exit cleanly to the Library with _library, for chapter breaks, story endings, and world-spanning design. Start Over vs Resume is always the player's choice, never the author's.</div>
+      </div>
+      <div class="author-item reveal">
+        <div class="item-num">08</div>
+        <div class="item-title">Feats, Quests & Backgrounds</div>
+        <div class="item-desc">Define feats with triggers: passive, active, on-hit, low HP, combat start. Build story quests with full tracking: active, complete, failed. Create backgrounds with stat bonuses and starting gear. Character creation auto-populates from your JSON.</div>
+      </div>
+    </div>
+
+    <div class="video-wrap reveal">
+      <div class="video-ratio">
+        <iframe src="https://www.youtube.com/embed/KYhVdeQaDxg" title="LoreGlass Engine Showcase" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="video-cap">✦ Engine showcase: inventory, memories and author companion ✦</div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">The System</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
+<section class="mechanics" id="mechanics">
+  <div class="section-inner">
+    <p class="s-label reveal">Under the Hood</p>
+    <h2 class="s-title reveal">A full RPG in every book.</h2>
+    <p class="s-lead reveal">LoreGlass doesn't simulate an RPG. It runs one. Every stat, slot, status effect, and keyword bucket is live state. Authors choose how much of the system to surface in their world.</p>
+    <div class="mechanics-grid">
+      <div class="mech-cell reveal"><span class="mech-icon">⚔</span><div class="mech-label">Combat Engine</div><div class="mech-desc">Initiative rolls, 1d10 attacks, DR reduction, status-on-hit, flee and permadeath</div></div>
+      <div class="mech-cell reveal"><span class="mech-icon">🛡</span><div class="mech-label">7 Equipment Slots</div><div class="mech-desc">Main, off-hand, head, body, legs, feet, back. All tracked on the character.</div></div>
+      <div class="mech-cell reveal"><span class="mech-icon">📦</span><div class="mech-label">Instance Inventory</div><div class="mech-desc">Every item is a unique snapshot. Stats and lore travel between books intact.</div></div>
+      <div class="mech-cell reveal"><span class="mech-icon">🧪</span><div class="mech-label">Scrolls & Consumables</div><div class="mech-desc">heal_hp, cure_status, apply_status. Usable from the Items tab at any time.</div></div>
+      <div class="mech-cell reveal"><span class="mech-icon">💫</span><div class="mech-label">Status Effects</div><div class="mech-desc">Poisoned, burning, bleeding, regenerating, stunned, cursed. Tick every card.</div></div>
+      <div class="mech-cell reveal"><span class="mech-icon">🗝</span><div class="mech-label">4 Keyword Buckets</div><div class="mech-desc">Book, quest, story (survives New Run), memory (permanent chronicle)</div></div>
+      <div class="mech-cell reveal"><span class="mech-icon">🎲</span><div class="mech-label">Stat Rolls</div><div class="mech-desc">1d10 + any of 6 stats vs DC. Success and fail branches, optional modifier.</div></div>
+      <div class="mech-cell reveal"><span class="mech-icon">💰</span><div class="mech-label">Economy</div><div class="mech-desc">Silver integers, dynamic markets, bounty boards, merchant buy/sell per town</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">What's Next</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
+<section class="roadmap" id="roadmap">
+  <div class="section-inner">
+    <p class="s-label reveal">Approaching 1.0</p>
+    <h2 class="s-title reveal">The road forward.</h2>
+    <p class="s-lead reveal">LoreGlass is approaching its first stable release. These are the systems in active development and planned for the 1.0 milestone and beyond.</p>
+    <div class="road-grid">
+      <div class="road-item reveal">
+        <div class="road-tag">Combat / In Progress</div>
+        <div class="road-title">Multi-Combatant Encounters</div>
+        <div class="road-desc">Expanding combat to support multiple simultaneous enemies and the groundwork for a future party system. Enemy groupings, priority targeting, and encounter pacing. Encounters currently resolve too quickly and that's being addressed directly.</div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">Dice / In Progress</div>
+        <div class="road-title">Slower, More Deliberate Rolls</div>
+        <div class="road-desc">The current roll-and-click flow is too fast. Upcoming changes introduce roll animation, result display, and deliberate pacing so that stat checks feel weighty and consequential rather than instant.</div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">Engine / Planned</div>
+        <div class="road-title">Customizable Tracking Systems</div>
+        <div class="road-desc">Authors will be able to define entirely new tracking modules: ship inventory, crew morale, trade routes, city revenue, GP/day tracking for owned properties, or any system their world requires. If the author needs a new tab, they can build one.</div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">Themes / Planned</div>
+        <div class="road-title">Theme Creator & World Skinning</div>
+        <div class="road-desc">A full theme creator for authors to skin their book's UI. Beyond the current presets: custom colours, backgrounds, and editor themes per world. Authors define the look of their door, not just the words inside it.</div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">Safety / Planned</div>
+        <div class="road-title">Character Backups & Permadeath Toggle</div>
+        <div class="road-desc">Ongoing work on character backups and an optional permadeath disable toggle, so players and authors can agree on stakes before stepping through a door. High-lethality remains the default. Safety nets are opt-in.</div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">Platform / Planned</div>
+        <div class="road-title">Full Multi-Platform Release</div>
+        <div class="road-desc">LoreGlass targets PC, Mac, Android, and HTML5 with a unified codebase. The 1.0 release ships all four simultaneously. No platform-specific rewrites, no feature gaps between versions.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">Development Chronicle</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
+<section class="changelog" id="chronicle">
+  <div class="section-inner">
+    <p class="s-label reveal">Development Chronicle</p>
+    <h2 class="s-title reveal">From first page to engine.</h2>
+    <p class="s-lead reveal">LoreGlass began as a single Godot 4 scene. This is an honest record of how it became something else entirely.</p>
+    <div class="timeline">
+
+      <div class="v-block">
+        <div class="v-tag">v0.1 / The First Spark</div>
+        <div class="v-title">Proof of Concept</div>
+        <ul class="v-notes">
+          <li>Single-scene Godot 4 prototype. Hardcoded cards and choices.</li>
+          <li>First JSON card format sketched out</li>
+          <li>The pivot: from code-based stories to a JSON-reading database</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.2 / The Book System</div>
+        <div class="v-title">Dynamic Card Loading</div>
+        <ul class="v-notes">
+          <li>JSON-driven card loading from book folders on disk</li>
+          <li>Library screen and character selection</li>
+          <li>First persistent keyword system. Story flags that outlive sessions.</li>
+          <li>Save/load via per-character .dat files</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.3 / Characters Live</div>
+        <div class="v-title">Character Creation & Stats</div>
+        <ul class="v-notes">
+          <li>Full 3-step character creation: name, race, background</li>
+          <li>Six core stats: Might, Finesse, Grit, Cunning, Charisma, Lore</li>
+          <li>Race presets with stat arrays and starting gold</li>
+          <li>HUD tabs: Stats, Items, Equipment</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.4 / Swords and Wounds</div>
+        <div class="v-title">Combat Engine</div>
+        <ul class="v-notes">
+          <li>Turn-based multi-round combat with initiative rolls</li>
+          <li>Attack resolution: 1d10 + Finesse vs AC</li>
+          <li>DR damage reduction; status effects: poisoned, burning, bleeding, stunned, frozen</li>
+          <li>Flee, victory, and permadeath defeat navigation</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.5 / The Market</div>
+        <div class="v-title">Economy & Merchants</div>
+        <ul class="v-notes">
+          <li>Merchant card type with structured buy/sell rows</li>
+          <li>Currency stored as silver integers. 100s = 1g.</li>
+          <li>Dynamic market pricing with per-town multipliers</li>
+          <li>Merchant funds, stock tracking, cargo encumbrance</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.6 / Notice Board</div>
+        <div class="v-title">Quests & Bounties</div>
+        <ul class="v-notes">
+          <li>Bounty board card type with generated daily jobs per town</li>
+          <li>Fixed story quest rows with accept, complete, and fail keywords</li>
+          <li>Quest progress and merchant turn-in</li>
+          <li>Active quest reminder in Stats HUD</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.7 / Between Worlds</div>
+        <div class="v-title">Cross-Book Travel</div>
+        <ul class="v-notes">
+          <li>goto_book link type for cross-book navigation</li>
+          <li>Breadcrumb system: _prev_book and _prev_card magic values</li>
+          <li>Transition overlay with custom title text</li>
+          <li>_library destination: exits cleanly to the Library, character intact.</li>
+          <li>User book folder (user://Books/) shadows and extends built-ins</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.8 / The Author's Desk</div>
+        <div class="v-title">Author Companion App</div>
+        <ul class="v-notes">
+          <li>Full companion authoring tool: Canvas, Choices, Conditions, Effects, Encounter, Library tabs.</li>
+          <li>Directory + Recent card explorer; start_card pinned and highlighted</li>
+          <li>Structured editors for combat, merchant, and bounty board cards</li>
+          <li>All 16 condition and 26 effect types with full tooltips</li>
+          <li>Project Audit: broken links, orphaned cards, keyword index</li>
+          <li>Auto-save on card switch; jump-to-card → button on every choice row</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.9 / Feats and Lore</div>
+        <div class="v-title">Feats, Backgrounds, Stat Rolls</div>
+        <ul class="v-notes">
+          <li>Feat system: passive, active, on-hit, low-HP, and combat-start triggers</li>
+          <li>Background library with stat bonuses and starting keywords</li>
+          <li>Stat roll choice type. 1d10 + stat vs DC, success/fail branch.</li>
+          <li>Resurrection tokens and on-death intercept</li>
+          <li>Typewriter prose effect with configurable speed and skip</li>
+          <li>Eight UI themes. Applied instantly, saved to settings.</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.95 / The Living World</div>
+        <div class="v-title">Quest System & Memory Keywords</div>
+        <ul class="v-notes">
+          <li>quest_keywords dictionary, separate from book and persistent keywords.</li>
+          <li>Quest registry with metadata keyed by keyword ID</li>
+          <li>Quests tab: active, complete, failed. All rendered with status icons.</li>
+          <li>Story keywords (survive New Run) and memory keywords (permanent chronicle)</li>
+          <li>Memories HUD tab: Learned section and Chronicle section with descriptions</li>
+          <li>16 condition types including has_story_kw, has_memory_kw, has_item</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.95.5 / The Item Library</div>
+        <div class="v-title">items.json & Structured Items</div>
+        <ul class="v-notes">
+          <li>items.json as the central item registry: weapons, armour, consumables, trade goods.</li>
+          <li>Seven slot fields: main, off, head, body, legs, feet, back</li>
+          <li>use_effect structured editor: heal_hp, apply_status, cure_status</li>
+          <li>on_equip / on_unequip effect rows per item</li>
+          <li>feats.json, backgrounds.json, and races.json editors in Library tab</li>
+          <li>Book-defined races override engine built-ins by id</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.95.8 / The Item Engine</div>
+        <div class="v-title">Instance Inventory & Full HUD Rebuild</div>
+        <ul class="v-notes">
+          <li>Instance-based inventory. Every item is a unique snapshot with its own iid.</li>
+          <li>Item snapshots travel cross-book. A sword from one world works in another with zero definition overlap.</li>
+          <li>Scrolls shown on Main HUD as emoji+qty; consumables in Items tab only</li>
+          <li>heal_hp, apply_status, cure_status wired into apply_effect. Potions and scrolls fully functional.</li>
+          <li>Regeneration ticks every card transition; both status name variants supported</li>
+          <li>give_item and remove_item as card and choice effect types</li>
+          <li>unload_character() provides a clean slate on delete, create, and menu return. No state bleed.</li>
+          <li>Items HUD: 8 sections covering all item types</li>
+          <li>Audit expanded to cover all 16 condition types and all effect types</li>
+        </ul>
+      </div>
+
+      <div class="v-block current">
+        <div class="v-tag">v0.995 / Checkpoint ★ Current</div>
+        <div class="v-title">Audio, Stability & Character Integrity</div>
+        <ul class="v-notes">
+          <li>Music system rebuilt. MP3 and OGG load from buffer; loop correctly set on all dynamic streams.</li>
+          <li>resource_path tagged on dynamically created streams. Same-track detection now works.</li>
+          <li>Fade-in / fade-out crossfade on all track transitions including combat music</li>
+          <li>Character creation fully isolated. unload_character() called before any new character is built.</li>
+          <li>Delete character: full state wipe, _in_game cleared, Resume never appears for a deleted character</li>
+          <li>show_main_menu() clears _in_game and book context when no valid character is loaded</li>
+          <li>_library destination wired in Shell. goto_book {book: _library} saves and exits cleanly.</li>
+          <li>goto_book popup: wipe_book_state removed; _library and _prev_book documented inline</li>
+          <li>Author Companion audit now tracks story_kw, memory_kw, has_item, give_item across all cards</li>
+          <li>set_memory_kw display fixed. Key and description populate correctly on load.</li>
+          <li>itch.io page live: loreglass.itch.io/loreglass</li>
+          <li>YouTube channel: @LoreGlass</li>
+          <li>Contact: LoreGlassRPG@proton.me</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">Get In Touch</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
+<section class="contact">
+  <div class="section-inner">
+    <p class="s-label reveal">Contact & Community</p>
+    <h2 class="s-title reveal">Open the door.</h2>
+    <p class="s-lead reveal" style="margin:0 auto;">Authors, players, press: all welcome. LoreGlass is an open creative ecosystem. Reach out to collaborate, report an issue, or share what you're building.</p>
+    <div class="contact-grid">
+      <a href="https://loreglass.itch.io/loreglass" target="_blank" class="contact-card">
+        <span class="contact-icon">🎮</span>
+        <div class="contact-label">Play & Download</div>
+        <div class="contact-value">loreglass.itch.io</div>
+      </a>
+      <a href="https://www.youtube.com/@LoreGlass" target="_blank" class="contact-card">
+        <span class="contact-icon">▷</span>
+        <div class="contact-label">YouTube</div>
+        <div class="contact-value">@LoreGlass</div>
+      </a>
+      <a href="mailto:LoreGlassRPG@proton.me" class="contact-card">
+        <span class="contact-icon">✉</span>
+        <div class="contact-label">Email</div>
+        <div class="contact-value">LoreGlassRPG@proton.me</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
+<section class="closing">
+  <p class="closing-kicker">Conceived &amp; Directed by Grey Hammond</p>
+  <p class="closing-quote">"Every story is a door. LoreGlass builds the frame."</p>
+  <p class="closing-attr">Approaching 1.0. The frame is nearly complete.</p>
+</section>
+
+<footer>
+  <div class="footer-credit">
+    Conceived &amp; Directed by &nbsp;<span>Grey Hammond</span>
+    &nbsp;·&nbsp; LoreGlass Engine &nbsp;·&nbsp; Built with Godot 4 &nbsp;·&nbsp; © 2026
+  </div>
+  <div class="footer-links">
+    <a href="https://loreglass.itch.io/loreglass" target="_blank">Play on itch.io</a>
+    <a href="mailto:LoreGlassRPG@proton.me">Contact</a>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+const emberContainer = document.getElementById('embers');
+const EMBER_TYPES = [
+  { size: 2, color: '#e8b84a', maxOp: 0.55 },
+  { size: 1.5, color: '#c8922a', maxOp: 0.4 },
+  { size: 1, color: '#f2dea0', maxOp: 0.3 },
+];
+for (let i = 0; i < 55; i++) {
+  const e = document.createElement('div');
+  e.className = 'ember';
+  const type = EMBER_TYPES[Math.floor(Math.random() * EMBER_TYPES.length)];
+  const size = type.size + Math.random() * 1.5;
+  e.style.cssText = `
+    left: ${Math.random() * 100}%;
+    bottom: ${Math.random() * 20}%;
+    width: ${size}px; height: ${size}px;
+    background: ${type.color};
+    box-shadow: 0 0 ${size * 2}px ${type.color};
+    --t: ${9 + Math.random() * 14}s;
+    --d: ${Math.random() * 12}s;
+    --op: ${type.maxOp * (0.6 + Math.random() * 0.4)};
+    --h: ${80 + Math.random() * 60}vh;
+    --x: ${(Math.random() - 0.5) * 120}px;
+  `;
+  emberContainer.appendChild(e);
+}
+
+const revealEls = document.querySelectorAll('.reveal, .v-block, .player-card, .author-item, .mech-cell, .road-item, .contact-card');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const siblings = [...entry.target.parentElement.children].filter(c =>
+        c.classList.contains(entry.target.className.split(' ')[0])
+      );
+      const idx = siblings.indexOf(entry.target);
+      setTimeout(() => entry.target.classList.add('visible'), Math.min(idx * 60, 400));
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => io.observe(el));
+</script>
+</body>
+</html>
