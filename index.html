@@ -393,18 +393,70 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
 
 <section class="mechanics" id="mechanics">
   <div class="section-inner">
-    <p class="s-label reveal">Under the Hood</p>
+    <p class="s-label reveal">Systems Architecture</p>
     <h2 class="s-title reveal">A full RPG in every book.</h2>
-    <p class="s-lead reveal">LoreGlass doesn't simulate an RPG. It runs one. Every stat, slot, status effect, and keyword bucket is live state. Authors choose how much of the system to surface in their world.</p>
+    <p class="s-lead reveal">LoreGlass doesn't simulate an RPG—it runs one. Every stat, slot, status effect, and keyword bucket is live state. Authors choose how much of the system to surface in their world.</p>
+    
     <div class="mechanics-grid">
-      <div class="mech-cell reveal"><span class="mech-icon">⚔</span><div class="mech-label">Combat Engine</div><div class="mech-desc">Initiative rolls, 1d10 attacks, DR reduction, status-on-hit, flee and permadeath</div></div>
-      <div class="mech-cell reveal"><span class="mech-icon">🛡</span><div class="mech-label">7 Equipment Slots</div><div class="mech-desc">Main, off-hand, head, body, legs, feet, back. All tracked on the character.</div></div>
-      <div class="mech-cell reveal"><span class="mech-icon">📦</span><div class="mech-label">Instance Inventory</div><div class="mech-desc">Every item is a unique snapshot. Stats and lore travel between books intact.</div></div>
-      <div class="mech-cell reveal"><span class="mech-icon">🧪</span><div class="mech-label">Scrolls & Consumables</div><div class="mech-desc">heal_hp, cure_status, apply_status. Usable from the Items tab at any time.</div></div>
-      <div class="mech-cell reveal"><span class="mech-icon">💫</span><div class="mech-label">Status Effects</div><div class="mech-desc">Poisoned, burning, bleeding, regenerating, stunned, cursed. Tick every card.</div></div>
-      <div class="mech-cell reveal"><span class="mech-icon">🗝</span><div class="mech-label">4 Keyword Buckets</div><div class="mech-desc">Book, quest, story (survives New Run), memory (permanent chronicle)</div></div>
-      <div class="mech-cell reveal"><span class="mech-icon">🎲</span><div class="mech-label">Stat Rolls</div><div class="mech-desc">1d10 + any of 6 stats vs DC. Success and fail branches, optional modifier.</div></div>
-      <div class="mech-cell reveal"><span class="mech-icon">💰</span><div class="mech-label">Economy</div><div class="mech-desc">Silver integers, dynamic markets, bounty boards, merchant buy/sell per town</div></div>
+      <div class="mech-cell reveal">
+        <span class="mech-icon">⚔</span>
+        <div class="mech-label">Combat Engine</div>
+        <div class="mech-desc">Initiative rolls, 1d10 attacks, DR reduction, status-on-hit, flee, and permadeath triggers.</div>
+      </div>
+
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🛡</span>
+        <div class="mech-label">7 Equipment Slots</div>
+        <div class="mech-desc">Main, off-hand, head, body, legs, feet, and back. All items are tracked on the persistent character.</div>
+      </div>
+
+      <div class="mech-cell reveal">
+        <span class="mech-icon">📦</span>
+        <div class="mech-label">Instance Inventory</div>
+        <div class="mech-desc">Every item is a unique snapshot. Stats and lore travel between authored books entirely intact.</div>
+      </div>
+
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🧪</span>
+        <div class="mech-label">Scrolls & Consumables</div>
+        <div class="mech-desc">heal_hp, cure_status, and apply_status logic. Usable from the Items tab at any time during play.</div>
+      </div>
+
+      <div class="mech-cell reveal">
+        <span class="mech-icon">💫</span>
+        <div class="mech-label">Status Effects</div>
+        <div class="mech-desc">Poisoned, burning, bleeding, regenerating, stunned, and cursed. Every effect ticks on every new card.</div>
+      </div>
+
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🗝</span>
+        <div class="mech-label">4 Keyword Buckets</div>
+        <div class="mech-desc">Book, Quest, Story (survives New Run), and Memory (the character's permanent chronicle).</div>
+      </div>
+
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🎲</span>
+        <div class="mech-label">Stat Rolls</div>
+        <div class="mech-desc">1d10 + Stat vs DC. Success and fail branches with optional modifiers based on world state.</div>
+      </div>
+
+      <div class="mech-cell reveal">
+        <span class="mech-icon">💰</span>
+        <div class="mech-label">Economy</div>
+        <div class="mech-desc">Silver integers and "dy" time-tracking. Persistent wealth that follows the player across the library.</div>
+      </div>
+
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🎚️</span>
+        <div class="mech-label">Audio Mixer</div>
+        <div class="mech-desc">Multi-channel MP3/OGG looping with automated crossfades and SFX interrupt logic for a persistent soundscape.</div>
+      </div>
+
+      <div class="mech-cell reveal">
+        <span class="mech-icon">🖼️</span>
+        <div class="mech-label">Dynamic HUD</div>
+        <div class="mech-desc">A reactive UI layer that polls character state every frame to redraw grids, bars, and themes based on theme.json.</div>
+      </div>
     </div>
   </div>
 </section>
