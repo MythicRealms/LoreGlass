@@ -410,7 +410,6 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
 </section>
 
 <div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">What's Next</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
-
 <section class="roadmap" id="roadmap">
   <div class="section-inner">
     <p class="s-label reveal">Approaching 1.0</p>
@@ -418,38 +417,59 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
     <p class="s-lead reveal">LoreGlass is approaching its first stable release. These are the systems in active development and planned for the 1.0 milestone and beyond.</p>
     <div class="road-grid">
       <div class="road-item reveal">
-        <div class="road-tag">Combat / In Progress</div>
-        <div class="road-title">Multi-Combatant Encounters</div>
-        <div class="road-desc">Expanding combat to support multiple simultaneous enemies and the groundwork for a future party system. Enemy groupings, priority targeting, and encounter pacing. Encounters currently resolve too quickly and that's being addressed directly.</div>
+        <div class="road-tag">v0.996 / Next</div>
+        <div class="road-title">Main Menu Refocus</div>
+        <div class="road-desc">The menu is functional but impersonal. Character summary on the main screen showing race, level, last book, and current gold. A proper Continue state that shows where the character left off. The Library redesigned to feel like choosing a world. Lethality labels displayed before entering a book so players know what they are stepping into.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Dice / In Progress</div>
-        <div class="road-title">Slower, More Deliberate Rolls</div>
-        <div class="road-desc">The current roll-and-click flow is too fast. Upcoming changes introduce roll animation, result display, and deliberate pacing so that stat checks feel weighty and consequential rather than instant.</div>
+        <div class="road-tag">v0.997 / Combat</div>
+        <div class="road-title">Combat Finalization</div>
+        <div class="road-desc">Current combat resolves too fast with no visual weight. Pacing between rounds, hit and miss feedback, status indicators during the fight. Data architecture for multi-enemy encounters established now so it does not require a rewrite later. Initiative tracking, turn order, targeting, and per-enemy effect stacks designed here even if the full multi-combatant UI ships post-1.0.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Engine / Planned</div>
+        <div class="road-tag">v0.998 / Polish</div>
+        <div class="road-title">Final Polish</div>
+        <div class="road-desc">First-launch onboarding for new players. Error handling for missing or corrupt book files. Save file versioning so future engine updates can migrate old saves. Audio polish, font size setting, a proper credits screen, and book version checking so players see a clear warning if a book requires a newer engine version.</div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">v1.0 / Release</div>
+        <div class="road-title">First Release</div>
+        <div class="road-desc">First chapter bundled and shipped. Content manifest live on GitHub. All four platforms tested: PC, Mac, Android, HTML5. Character creation, the Library, cross-book travel, and the full item and combat systems stable and documented for community authors.</div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">Post-1.0 / Engine</div>
         <div class="road-title">Customizable Tracking Systems</div>
-        <div class="road-desc">Authors will be able to define entirely new tracking modules: ship inventory, crew morale, trade routes, city revenue, GP/day tracking for owned properties, or any system their world requires. If the author needs a new tab, they can build one.</div>
+        <div class="road-desc">Authors define entirely new tracking modules: ship inventory, crew morale, trade routes, city revenue, GP/day tracking for owned properties, or any system their world requires. Define it in JSON and the engine reads it. No engine modification needed.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Themes / Planned</div>
-        <div class="road-title">Theme Creator & World Skinning</div>
-        <div class="road-desc">A full theme creator for authors to skin their book's UI. Beyond the current presets: custom colours, backgrounds, and editor themes per world. Authors define the look of their door, not just the words inside it.</div>
+        <div class="road-tag">Post-1.0 / Combat</div>
+        <div class="road-title">Multi-Enemy and Party Combat</div>
+        <div class="road-desc">Full multi-combatant encounters with initiative tracking, individual turn order, per-enemy targeting, and area effects. Groundwork for a party system where authored companions join the player across books carrying their own stats and history.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Safety / Planned</div>
-        <div class="road-title">Character Backups & Permadeath Toggle</div>
-        <div class="road-desc">Ongoing work on character backups and an optional permadeath disable toggle, so players and authors can agree on stakes before stepping through a door. High-lethality remains the default. Safety nets are opt-in.</div>
+        <div class="road-tag">Post-1.0 / Author</div>
+        <div class="road-title">Author Companion Preview Mode</div>
+        <div class="road-desc">A read-only render mode inside the Author Companion showing exactly what a card looks like to a player. Prose rendered, choice buttons with conditions evaluated against a test character, item previews. Reduces back-and-forth between authoring and playtesting.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Platform / Planned</div>
-        <div class="road-title">Full Multi-Platform Release</div>
-        <div class="road-desc">LoreGlass targets PC, Mac, Android, and HTML5 with a unified codebase. The 1.0 release ships all four simultaneously. No platform-specific rewrites, no feature gaps between versions.</div>
+        <div class="road-tag">Post-1.0 / Themes</div>
+        <div class="road-title">Theme Creator and World Skinning</div>
+        <div class="road-desc">A full theme creator for authors to define the UI appearance of their specific book. Custom colours, backgrounds, fonts, and editor themes per world. Authors define the look of their door, not just the words inside it.</div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">Post-1.0 / Safety</div>
+        <div class="road-title">Character Backups and Permadeath Toggle</div>
+        <div class="road-desc">Local and optional cloud character backups so a single bad encounter does not erase years of history. An opt-in permadeath disable toggle negotiated between the player and the book's lethality label. High-lethality remains the default. Safety nets are opt-in.</div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">Post-1.0 / The Library</div>
+        <div class="road-title">The Library as a Living Space</div>
+        <div class="road-desc">Right now the Library is a menu. The long-term vision is an authored location your character walks into between adventures. A librarian who remembers your history. A trophy room. A notice board. The engine already supports this. The hook will exist before 1.0 so no rewrite is needed when the time comes.</div>
       </div>
     </div>
   </div>
 </section>
+
 
 <div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">Development Chronicle</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
 
@@ -609,25 +629,53 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
         <div class="v-tag">v0.995 / Checkpoint ★ Current</div>
         <div class="v-title">Audio, Stability & Character Integrity</div>
         <ul class="v-notes">
-          <li>Music system rebuilt. MP3 and OGG load from buffer; loop correctly set on all dynamic streams.</li>
-          <li>resource_path tagged on dynamically created streams. Same-track detection now works.</li>
-          <li>Fade-in / fade-out crossfade on all track transitions including combat music</li>
-          <li>Character creation fully isolated. unload_character() called before any new character is built.</li>
-          <li>Delete character: full state wipe, _in_game cleared, Resume never appears for a deleted character</li>
-          <li>show_main_menu() clears _in_game and book context when no valid character is loaded</li>
-          <li>_library destination wired in Shell. goto_book {book: _library} saves and exits cleanly.</li>
-          <li>goto_book popup: wipe_book_state removed; _library and _prev_book documented inline</li>
-          <li>Author Companion audit now tracks story_kw, memory_kw, has_item, give_item across all cards</li>
-          <li>set_memory_kw display fixed. Key and description populate correctly on load.</li>
-          <li>itch.io page live: loreglass.itch.io/loreglass</li>
-          <li>YouTube channel: @LoreGlass</li>
+          <li>Music system rebuilt with support for MP3 and OGG buffers, seamless looping on all dynamic streams, and resource_path tagging so same-track detection works correctly</li>
+          <li>Audio crossfades: fade-in and fade-out transitions for all area and combat track changes</li>
+          <li>Full character integrity pass: unload_character() isolation on delete, create, and main menu return. No state bleed between characters.</li>
+          <li>Delete character wipes all state, clears _in_game, and removes the Resume button immediately</li>
+          <li>show_main_menu() clears book context when no valid character is loaded</li>
+          <li>_library destination wired in Shell. goto_book {book: _library} saves the character and exits cleanly to the menu</li>
+          <li>goto_book popup: wipe_book_state removed entirely. Start Over vs Resume is always a player choice from the Library, never an author card decision</li>
+          <li>Cross-platform book delivery: BookRegistry.gd handles all book discovery, ZIP import, and GitHub manifest download</li>
+          <li>ZIP import works on all platforms: native file dialog on desktop, Android SAF picker, JavaScript bridge on HTML5</li>
+          <li>Author Companion folder picker rebuilt: shows installed books list on Android, SAF browse for external storage</li>
+          <li>Author Companion audit expanded: full coverage of story_kw, memory_kw, has_item, and give_item across all cards and card-level effects</li>
+          <li>set_memory_kw display fixed in Author Companion. Key and description populate correctly on load.</li>
+          <li>races.json added to Author Companion skip list so it no longer appears as a card in the directory</li>
+          <li>itch.io: loreglass.itch.io/loreglass</li>
+          <li>YouTube: @LoreGlassRPG</li>
           <li>Contact: LoreGlassRPG@proton.me</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.995.1 / Patch</div>
+        <div class="v-title">Stability & File Picking</div>
+        <ul class="v-notes">
+          <li>races.json skip logic confirmed and tested across book load paths</li>
+          <li>Platform-aware file picker tested on Android: installed books list populates correctly from user://Books/</li>
+          <li>SAF browse button confirmed functional for books stored outside app internal storage</li>
+          <li>HTML5 JavaScript bridge ZIP import tested and validated in browser context</li>
+          <li>Minor edge case fixes from first round of cross-platform testing</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.995.2 / Delivery</div>
+        <div class="v-title">GitHub Manifest Integration</div>
+        <ul class="v-notes">
+          <li>Manifest fetch from GitHub live and caching correctly with 1-hour expiry</li>
+          <li>In-app book store rendering manifest entries with title, author, description, lethality label, and size</li>
+          <li>Download and install flow tested end-to-end on Android and HTML5</li>
+          <li>book_manifest.json format finalized: id, title, author, description, version, tags, zip_url, lethality</li>
+          <li>First chapter ZIP committed to repo and linked in manifest</li>
         </ul>
       </div>
 
     </div>
   </div>
 </section>
+
 
 <div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">Get In Touch</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
 
