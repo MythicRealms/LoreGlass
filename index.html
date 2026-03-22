@@ -462,71 +462,62 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
 </section>
 
 <div class="ornament"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-text">What's Next</div><div class="orn-diamond"></div><div class="orn-line"></div></div>
+
 <section class="roadmap" id="roadmap">
   <div class="section-inner">
-    <p class="s-label reveal">Approaching 1.0</p>
+    <p class="s-label reveal">Post 1.0</p>
     <h2 class="s-title reveal">The road forward.</h2>
-    <p class="s-lead reveal">LoreGlass is approaching its first stable release. These are the systems in active development and planned for the 1.0 milestone and beyond.</p>
+    <p class="s-lead reveal">LoreGlass 1.0 is moving out of "proof of concept" phase. These are the systems in active design and development for what comes next.</p>
     <div class="road-grid">
       <div class="road-item reveal">
-        <div class="road-tag">v0.996 / Next</div>
-        <div class="road-title">Main Menu Refocus</div>
-        <div class="road-desc">The menu is functional but impersonal. Character summary on the main screen showing race, level, last book, and current gold. A proper Continue state that shows where the character left off. The Library redesigned to feel like choosing a world. Lethality labels displayed before entering a book so players know what they are stepping into.</div>
+        <div class="road-tag">Next / Effects</div>
+        <div class="road-title">Effect Targeting</div>
+        <div class="road-desc">Feats and items gain explicit targets — self, enemy, all enemies, or party. A poison vial that damages an enemy and gives the player a brief adrenaline heal. A war cry that frightens every enemy and boosts the player's attack in the same action. Authors set it per effect row in the Author Companion.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">v0.997 / Combat</div>
-        <div class="road-title">Combat Finalization</div>
-        <div class="road-desc">Current combat resolves too fast with no visual weight. Pacing between rounds, hit and miss feedback, status indicators during the fight. Data architecture for multi-enemy encounters established now so it does not require a rewrite later. Initiative tracking, turn order, targeting, and per-enemy effect stacks designed here even if the full multi-combatant UI ships post-1.0.</div>
+        <div class="road-tag">Next / Combat</div>
+        <div class="road-title">Status Definition System</div>
+        <div class="road-desc">Statuses become full definitions with on_apply, per_tick, and on_expire hooks. Poisoned reduces Grit on application and restores it when it clears. Blessed boosts Might for three rounds then fades. Authors define their own statuses in statuses.json — the engine reads the definition and executes it. Built-in fallbacks for the common cases.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">v0.998 / Polish</div>
-        <div class="road-title">Final Polish</div>
-        <div class="road-desc">First-launch onboarding for new players. Error handling for missing or corrupt book files. Save file versioning so future engine updates can migrate old saves. Audio polish, font size setting, a proper credits screen, and book version checking so players see a clear warning if a book requires a newer engine version.</div>
-      </div>
-      <div class="road-item reveal">
-        <div class="road-tag">v1.0 / Release</div>
-        <div class="road-title">First Release</div>
-        <div class="road-desc">First chapter bundled and shipped. Content manifest live on GitHub. All four platforms tested: PC, Mac, Android, HTML5. Character creation, the Library, cross-book travel, and the full item and combat systems stable and documented for community authors.</div>
-      </div>
-      <div class="road-item reveal">
-        <div class="road-tag">Post-1.0 / Engine</div>
-        <div class="road-title">Customizable Tracking Systems</div>
-        <div class="road-desc">Authors define entirely new tracking modules: ship inventory, crew morale, trade routes, city revenue, GP/day tracking for owned properties, or any system their world requires. Define it in JSON and the engine reads it. No engine modification needed.</div>
-      </div>
-      <div class="road-item reveal">
-        <div class="road-tag">Post-1.0 / Combat</div>
+        <div class="road-tag">Next / Combat</div>
         <div class="road-title">Multi-Enemy and Party Combat</div>
-        <div class="road-desc">Full multi-combatant encounters with initiative tracking, individual turn order, per-enemy targeting, and area effects. Groundwork for a party system where authored companions join the player across books carrying their own stats and history.</div>
+        <div class="road-desc">Up to four enemies per encounter, each with their own initiative, AI, and reward on death. Up to four companions in the party, persistent across combats, equippable from the player's inventory. Full turn order with haste, slow, and stun affecting position. Target selector when multiple enemies are alive. Authors define named companions in companions.json and reference them by id in any combat card.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Post-1.0 / Author</div>
-        <div class="road-title">Author Companion Preview Mode</div>
-        <div class="road-desc">A read-only render mode inside the Author Companion showing exactly what a card looks like to a player. Prose rendered, choice buttons with conditions evaluated against a test character, item previews. Reduces back-and-forth between authoring and playtesting.</div>
+        <div class="road-tag">Next / Combat</div>
+        <div class="road-title">Companion Death Handling</div>
+        <div class="road-desc">Authors decide what happens when a companion falls. Remove them silently, persist them at zero for a possible resurrection, trigger a card that pauses combat and plays a scene, or end the encounter entirely and send the player somewhere else. Death can be a mechanic or a story beat. Both are first-class options.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Post-1.0 / Themes</div>
-        <div class="road-title">Theme Creator and World Skinning</div>
-        <div class="road-desc">A full theme creator for authors to define the UI appearance of their specific book. Custom colours, backgrounds, fonts, and editor themes per world. Authors define the look of their door, not just the words inside it.</div>
+        <div class="road-tag">Next / Prose</div>
+        <div class="road-title">Prose Variable Extensions</div>
+        <div class="road-desc">The existing {tag} system gains companion-aware tags. Reference a companion by name, check if they are alive, read their current HP, react to who fell last. {last_fallen_companion} in a death interrupt card. {if:companion:mira:alive} branches in any prose. The system already exists — these are additive tags once companions are built.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Post-1.0 / Safety</div>
-        <div class="road-title">Character Backups and Permadeath Toggle</div>
-        <div class="road-desc">Local and optional cloud character backups so a single bad encounter does not erase years of history. An opt-in permadeath disable toggle negotiated between the player and the book's lethality label. High-lethality remains the default. Safety nets are opt-in.</div>
+        <div class="road-tag">Near / Player</div>
+        <div class="road-title">UI Theme Picker</div>
+        <div class="road-desc">The theme system already exists — eighteen palettes covering dark, light, fantasy, sci-fi, and everything between. What is missing is a settings screen that exposes them to the player. Tap a theme, see it apply immediately, it saves. That is the full feature. Simple and overdue.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Post-1.0 / The Library</div>
-        <div class="road-title">The Library as a Living Space</div>
-        <div class="road-desc">Right now the Library is a menu. The long-term vision is an authored location your character walks into between adventures. A librarian who remembers your history. A trophy room. A notice board. The engine already supports this. The hook will exist before 1.0 so no rewrite is needed when the time comes.</div>
+        <div class="road-tag">Near / Player</div>
+        <div class="road-title">Character Backups</div>
+        <div class="road-desc">Export a character save file to your device. Import it back. Share it. Move it between installs. The save file is already a clean JSON document — the only missing piece is a UI path to move it in and out. Validation on import so a corrupt or foreign file never silently breaks a run.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Coming Soon</div>
-        <div class="road-title">u̷̥͌f̶̣͝r̶̮̊ż̸̰w̶̩̔N̷̜̈́ ̸̝́O̸̡̾Z̴̺̀T̷̗͝ï̸͙Y̵̹̅ ̵̠̀</div>
-        <div class="road-desc">k̵̲̉z̴̧̉G̶̢̒z̶̡̛h̸͈̉Ď̷̩ ̷̻͌n̶̅ͅu̷̖̐ ̴̥̄Ȑ̸̦S̵͕͆W̵͉̚ū̶̫ ̶̖̋s̸̖̏G̷̞̑k̵̠͂ ̶͖͊F̸͖́Y̵̯͑Ǹ̴̦ ̸̧̋o̷̢͊c̷̺̀W̸̻̕ ̴̠̈ẗ̴̪ẓ̷͑L̷͚͒Q̴́͜ ̶͉̿b̵̞͋Y̸̫͐ ̶̙̊ẅ̵̱́V̸̝̚o̶͙̊ ̷͍̓K̴̳̒ķ̴̇k̷̠͆c̵͓̈́ ̷̫̒Ÿ̶͓U̵̻̾r̸͇̀P̸̙͒ ̴̖̔ó̵̢v̵̬̐D̶͓̈́i̸͎̋d̸͓͌I̸̜̽ẑ̵̲ ̴̛̗k̸̪̆S̸̙͂Ľ̶̮Ẓ̵̓ó̵̫h̶̰̾v̷̝̄ ̵̙̓k̴̻͠k̴͍̉d̵̳̏m̷͕̃i̷̮̿Y̸̗͠ẁ̷̼B̷̈́ͅḅ̸̸̨̛̇ ̷̖͒W̴̮͝m̷̫̓z̸̥̈́ ̸̬̈́H̷̼͘ẇ̷̯d̶͚͑Z̷͖̑z̷̞̈́M̴̭̒ ̷͉̒v̴̡̓r̵͛͜L̷͔͂V̵͍͒ả̷̙V̸̟͝f̷̫̄f̴̥̍ŭ̵͉B̸͓̏ ̸̲̊k̶̰̀d̸̜̓Ḍ̷̈́I̵̫̊u̴̱̓H̵̢͘S̶̗͂r̸͇̓Ư̴͍ ̷̭̿p̷̖̃d̴͓̋Ṿ̴͂E̵̙͋g̵̗̊C̵̙̕ ̶̩̌m̸̖̓P̸̠͒B̴̡̐Y̸̘͒L̴̦̍I̸͈͝ ̵̠͆ ̵̰̐Ä̶͍́I̷͈͝F̶̢̽v̷͕̈J̶̠̄b̷̞́Ĥ̷͍Z̷̠̀ǘ̷͈h̵͙͝ ̷̟̿Z̶͔͋h̷̑ͅB̵̺͒ȏ̵̰d̸̞̉ṯ̷̽ ̷̗̄</div>
+        <div class="road-tag">Future / Author</div>
+        <div class="road-title">Custom HUD Panels</div>
+        <div class="road-desc">Authors define new tabs in the player HUD — trade routes, city management, crew morale, ship inventory. Define the panel in JSON: name it, list the variables it tracks, choose how each displays. The engine renders it. No engine modification needed per book. A nautical book gets a ship panel. A political game gets faction panels. The same system for any genre.</div>
       </div>
       <div class="road-item reveal">
-        <div class="road-tag">Coming Soon</div>
-        <div class="road-title">u̷̥͌f̶̣͝r̶̮̊ż̸̰w̶̩̔N̷̜̈́ ̸̝́O̸̡̾Z̴̺̀T̷̗͝ï̸͙Y̵̹̅ ̵̠̀</div>
-        <div class="road-desc">k̵̲̉z̴̧̉G̶̢̒z̶̡̛h̸͈̉Ď̷̩ ̷̻͌n̶̅ͅu̷̖̐ ̴̥̄Ȑ̸̦S̵͕͆W̵͉̚ū̶̫ ̶̖̋s̸̖̏G̷̞̑k̵̠͂ ̶͖͊F̸͖́Y̵̯͑Ǹ̴̦ ̸̧̋o̷̢͊c̷̺̀W̸̻̕ ̴̠̈ẗ̴̪ẓ̷͑L̷͚͒Q̴́͜ ̶͉̿b̵̞͋Y̸̫͐ ̶̙̊ẅ̵̱́V̸̝̚o̶͙̊ ̷͍̓K̴̳̒ķ̴̇k̷̠͆c̵͓̈́ ̷̫̒Ÿ̶͓U̵̻̾r̸͇̀P̸̙͒ ̴̖̔ó̵̢v̵̬̐D̶͓̈́i̸͎̋d̸͓͌I̸̜̽ẑ̵̲ ̴̛̗k̸̪̆S̸̙͂Ľ̶̮Ẓ̵̓ó̵̫h̶̰̾v̷̝̄ ̵̙̓k̴̻͠k̴͍̉d̵̳̏m̷͕̃i̷̮̿Y̸̗͠ẁ̷̼B̷̈́ͅḅ̸̸̨̛̇ ̷̖͒W̴̮͝m̷̫̓z̸̥̈́ ̸̬̈́H̷̼͘ẇ̷̯d̶͚͑Z̷͖̑z̷̞̈́M̴̭̒ ̷͉̒v̴̡̓r̵͛͜L̷͔͂V̵͍͒ả̷̙V̸̟͝f̷̫̄f̴̥̍ŭ̵͉B̸͓̏ ̸̲̊k̶̰̀d̸̜̓Ḍ̷̈́I̵̫̊u̴̱̓H̵̢͘S̶̗͂r̸͇̓Ư̴͍ ̷̭̿p̷̖̃d̴͓̋Ṿ̴͂E̵̙͋g̵̗̊C̵̙̕ ̶̩̌m̸̖̓P̸̠͒B̴̡̐Y̸̘͒L̴̦̍I̸͈͝ ̵̠͆ ̵̰̐Ä̶͍́I̷͈͝F̶̢̽v̷͕̈J̶̠̄b̷̞́Ĥ̷͍Z̷̠̀ǘ̷͈h̵͙͝ ̷̟̿Z̶͔͋h̷̑ͅB̵̺͒ȏ̵̰d̸̞̉ṯ̷̽ ̷̗̄</div>
+        <div class="road-tag">Future / The First Chapter</div>
+        <div class="road-title">O̸̡̾Z̴̺̀T̷̗͝ï̸͙Y̵< </div>
+        <div class="road-desc">k̵̲̉z̴̧̉G̶̢̒z̶̡̛h̸͈̉Ď̷̩ ̷̻͌n̶̅ͅu̷̖̐ ̴̥̄Ȑ̸̦S̵͕͆W̵͉̚ū̶̫ ̶̖̋s̸̖̏G̷̞̑k̵̠͂ ̶͖͊F̸͖́Y̵̯͑Ǹ̴̦ ̸̧̋o̷̢͊c̷̺̀W̸̻̕ ̴̠̈ẗ̴̪ẓ̷͑L̷͚͒Q̴́͜ ̶͉̿b̵̞͋Y̸̫͐ ̶̙̊ẅ̵̱́V̸̝̚o̶͙̊ ̷͍̓K̴̳̒ķ̴̇k̷̠͆c̵͓̈́ ̷̫̒Ÿ̶͓U̵̻̾r̸͇̀P̸̙͒ ̴̖̔ó̵̢v̵̬̐D̶͓̈́i̸͎̋d̸͓͌I̸̜̽ẑ̵̲ ̴̛̗k̸̪̆S̸̙͂Ľ̶̮Ẓ̵̓ó̵̫h̶̰̾v̷̝̄ ̵̙̓k̴̻͠k̴͍̉d̵̳̏m̷͕̃i̷̮̿Y̸̗͠ẁ̷̼B̷̈́ͅḅ̸̸̨̛̇ ̷̖͒W̴̮͝m̷̫̓z̸̥̈́ </div>
+      </div>
+      <div class="road-item reveal">
+        <div class="road-tag">Future / u̷̥͌f̶̣͝r̶̮̊ż̸̰w̶̩̔N̷̜̈́</div>
+        <div class="road-title">The Living Library</div>
+        <div class="road-desc"≯̬̈́H̷̼͘ẇ̷̯d̶͚͑Z̷͖̑z̷̞̈́M̴̭̒ ̷͉̒v̴̡̓r̵͛͜L̷͔͂V̵͍͒ả̷̙V̸̟͝f̷̫̄f̴̥̍ŭ̵͉B̸͓̏ ̸̲̊k̶̰̀d̸̜̓Ḍ̷̈́I̵̫̊u̴̱̓H̵̢͘S̶̗͂r̸͇̓Ư̴͍ ̷̭̿p̷̖̃d̴͓̋Ṿ̴͂E̵̙͋g̵̗̊C̵̙̕ ̶̩̌m̸̖̓P̸̠͒B̴̡̐Y̸̘͒L̴̦̍I̸͈͝ ̵̠͆ ̵̰̐Ä̶͍́I̷͈͝F̶̢̽v̷͕̈J̶̠̄b̷̞́Ĥ̷͍Z̷̠̀ǘ̷͈h̵͙͝ ̷̟̿Z̶͔͋h̷̑ͅB̵̺͒ȏ̵̰d̸̞̉ṯ̷̽ ̷̗̄  </div>
       </div>
     </div>
   </div>
@@ -613,7 +604,7 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
           <li>goto_book link type for cross-book navigation</li>
           <li>Breadcrumb system: _prev_book and _prev_card magic values</li>
           <li>Transition overlay with custom title text</li>
-          <li>_library destination: exits cleanly to the Library, character intact.</li>
+          <li>_library destination: exits cleanly to the Library, character intact</li>
           <li>User book folder (user://Books/) shadows and extends built-ins</li>
         </ul>
       </div>
@@ -622,7 +613,7 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
         <div class="v-tag">v0.8 / The Author's Desk</div>
         <div class="v-title">Author Companion App</div>
         <ul class="v-notes">
-          <li>Full companion authoring tool: Canvas, Choices, Conditions, Effects, Encounter, Library tabs.</li>
+          <li>Full companion authoring tool: Canvas, Choices, Conditions, Effects, Encounter, Library tabs</li>
           <li>Directory + Recent card explorer; start_card pinned and highlighted</li>
           <li>Structured editors for combat, merchant, and bounty board cards</li>
           <li>All 16 condition and 26 effect types with full tooltips</li>
@@ -648,7 +639,7 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
         <div class="v-tag">v0.95 / The Living World</div>
         <div class="v-title">Quest System & Memory Keywords</div>
         <ul class="v-notes">
-          <li>quest_keywords dictionary, separate from book and persistent keywords.</li>
+          <li>quest_keywords dictionary, separate from book and persistent keywords</li>
           <li>Quest registry with metadata keyed by keyword ID</li>
           <li>Quests tab: active, complete, failed. All rendered with status icons.</li>
           <li>Story keywords (survive New Run) and memory keywords (permanent chronicle)</li>
@@ -661,7 +652,7 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
         <div class="v-tag">v0.95.5 / The Item Library</div>
         <div class="v-title">items.json & Structured Items</div>
         <ul class="v-notes">
-          <li>items.json as the central item registry: weapons, armour, consumables, trade goods.</li>
+          <li>items.json as the central item registry: weapons, armour, consumables, trade goods</li>
           <li>Seven slot fields: main, off, head, body, legs, feet, back</li>
           <li>use_effect structured editor: heal_hp, apply_status, cure_status</li>
           <li>on_equip / on_unequip effect rows per item</li>
@@ -686,26 +677,17 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
         </ul>
       </div>
 
-      <div class="v-block current">
-        <div class="v-tag">v0.995 / Checkpoint ★ Current</div>
+      <div class="v-block">
+        <div class="v-tag">v0.995 / Checkpoint</div>
         <div class="v-title">Audio, Stability & Character Integrity</div>
         <ul class="v-notes">
-          <li>Music system rebuilt with support for MP3 and OGG buffers, seamless looping on all dynamic streams, and resource_path tagging so same-track detection works correctly</li>
+          <li>Music system rebuilt with MP3 and OGG buffer support, seamless looping, and resource_path tagging</li>
           <li>Audio crossfades: fade-in and fade-out transitions for all area and combat track changes</li>
-          <li>Full character integrity pass: unload_character() isolation on delete, create, and main menu return. No state bleed between characters.</li>
-          <li>Delete character wipes all state, clears _in_game, and removes the Resume button immediately</li>
-          <li>show_main_menu() clears book context when no valid character is loaded</li>
-          <li>_library destination wired in Shell. goto_book {book: _library} saves the character and exits cleanly to the menu</li>
-          <li>goto_book popup: wipe_book_state removed entirely. Start Over vs Resume is always a player choice from the Library, never an author card decision</li>
+          <li>Full character integrity pass: unload_character() isolation on delete, create, and main menu return</li>
           <li>Cross-platform book delivery: BookRegistry.gd handles all book discovery, ZIP import, and GitHub manifest download</li>
           <li>ZIP import works on all platforms: native file dialog on desktop, Android SAF picker, JavaScript bridge on HTML5</li>
-          <li>Author Companion folder picker rebuilt: shows installed books list on Android, SAF browse for external storage</li>
-          <li>Author Companion audit expanded: full coverage of story_kw, memory_kw, has_item, and give_item across all cards and card-level effects</li>
-          <li>set_memory_kw display fixed in Author Companion. Key and description populate correctly on load.</li>
-          <li>races.json added to Author Companion skip list so it no longer appears as a card in the directory</li>
-          <li>itch.io: loreglass.itch.io/loreglass</li>
-          <li>YouTube: @LoreGlassRPG</li>
-          <li>Contact: LoreGlassRPG@proton.me</li>
+          <li>Author Companion folder picker rebuilt for Android with installed books list and SAF browse</li>
+          <li>Author Companion audit expanded: full coverage of story_kw, memory_kw, has_item, give_item</li>
         </ul>
       </div>
 
@@ -713,9 +695,9 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
         <div class="v-tag">v0.995.1 / Patch</div>
         <div class="v-title">Stability & File Picking</div>
         <ul class="v-notes">
-          <li>races.json skip logic confirmed and tested across book load paths</li>
-          <li>Platform-aware file picker tested on Android: installed books list populates correctly from user://Books/</li>
-          <li>SAF browse button confirmed functional for books stored outside app internal storage</li>
+          <li>races.json skip logic confirmed and tested across all book load paths</li>
+          <li>Platform-aware file picker tested on Android: installed books list populates correctly</li>
+          <li>SAF browse confirmed functional for books stored outside app internal storage</li>
           <li>HTML5 JavaScript bridge ZIP import tested and validated in browser context</li>
           <li>Minor edge case fixes from first round of cross-platform testing</li>
         </ul>
@@ -726,10 +708,49 @@ footer{padding:2.2rem 3rem;border-top:1px solid var(--rule);display:flex;align-i
         <div class="v-title">GitHub Manifest Integration</div>
         <ul class="v-notes">
           <li>Manifest fetch from GitHub live and caching correctly with 1-hour expiry</li>
-          <li>In-app book store rendering manifest entries with title, author, description, lethality label, and size</li>
+          <li>In-app book store rendering manifest entries with title, author, description, lethality, and size</li>
           <li>Download and install flow tested end-to-end on Android and HTML5</li>
-          <li>book_manifest.json format finalized: id, title, author, description, version, tags, zip_url, lethality</li>
+          <li>book_manifest.json format finalised: id, title, author, description, version, tags, zip_url, lethality</li>
           <li>First chapter ZIP committed to repo and linked in manifest</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.995.3 / Overhaul</div>
+        <div class="v-title">GitHub Manifest Integration</div>
+        <ul class="v-notes">
+          <li>Main Menu Overhaul: atmospheric background, Cinzel/Cormorant fonts, ember particles, adaptive character layout</li>
+          <li>Combat Overhaul: Pacing : three-phase cinematic sequence — die roll, calculation reveal, enemy counterattack with full round summary</li>
+          <li>Base Stat Overhaul: Might damage bonus, Finesse AC, Grit DR, Cunning resist threshold, Lore heal bonus</li>
+          <li>Enemy stats expanded: initiative_bonus, DR, status_resist fields in encounter editor</li>
+        </ul>
+      </div>
+
+      <div class="v-block">
+        <div class="v-tag">v0.995.4 / Penmanship </div>
+        <div class="v-title">GitHub Manifest Integration</div>
+        <ul class="v-notes">
+          <li>Book version checking: min_engine_version in book.json, warning screen before load, ENGINE_VERSION constant wired throughout</li>
+          <li>Prose font size setting: player-adjustable 14–24pt, saved to settings</li>
+          <li>Credits screen rebuilt with Cinzel/Cormorant typography, atmospheric overlay, auto-scroll</li>
+          <li>Engine SFX system: Kenney audio wired to all navigation, combat, and die roll events with book-level overrides</li>
+          <li>Emoji font fallback: NotoEmoji registered engine-wide for correct rendering on HTML5 and Android</li>
+          <li>Prose Variable System: {tag} syntax resolves live game state into card prose. Two-pass resolver with full conditional block support.</li>
+        </ul>
+      </div>
+
+      <div class="v-block current">
+        <div class="v-tag">v1.0 / "Chronicle" ★ Current Build</div>
+        <div class="v-title">"Proof of Concept" Completed</div>
+        <ul class="v-notes">
+          <li>Author Companion: Book Settings tab — title, author, version, min_engine_version, lethality, tags written to book.json</li>
+          <li>Author Companion: combat audio fields — per-encounter SFX overrides for hit, miss, win, defeat, and music</li>
+          <li>Author Companion: auto-load on book open — book.json, items, feats, and backgrounds load automatically</li>
+          <li>Author Companion: items type dropdown — weapon/armour/consumable/misc replaces free-text field</li>
+          <li>Author Companion: feat structured effect builder — type dropdowns and live JSON preview replace raw JSON field</li>
+          <li>Author Companion: background stat spinboxes — individual stat fields replace free-text bonus string</li>
+          <li>Author Companion: jump-to-card → button on every choice row</li>
+          <li>Author Companion: eighteen UI themes with instant apply and settings persistence</li>
         </ul>
       </div>
 
